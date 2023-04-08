@@ -17,5 +17,5 @@ data class Transaction(
         parentColumn = "id",
         entityColumn = "transaction_id"
     )
-    val groupSelection: GroupSelection,
+    val groupSelection: GroupSelection?,
 )

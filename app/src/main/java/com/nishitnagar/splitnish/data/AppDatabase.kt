@@ -2,17 +2,24 @@ package com.nishitnagar.splitnish.data
 
 import android.content.Context
 import androidx.room.*
-import com.nishitnagar.splitnish.Convertors
-import com.nishitnagar.splitnish.data.dao.AccountDao
-import com.nishitnagar.splitnish.data.dao.CategoryDao
-import com.nishitnagar.splitnish.data.dao.ChapterDao
-import com.nishitnagar.splitnish.data.dao.TransactionDao
+import com.nishitnagar.splitnish.data.dao.*
+import com.nishitnagar.splitnish.util.RoomTypeConvertors
 import com.nishitnagar.splitnish.data.entity.*
 
 
-@TypeConverters(Convertors::class)
+@TypeConverters(RoomTypeConvertors::class)
 @Database(
-    entities = [AccountEntity::class, CategoryEntity::class, ChapterEntity::class, UserSelectionEntity::class, GroupSelectionEntity::class, TransactionEntity::class],
+    entities = [
+        AccountEntity::class,
+        CategoryEntity::class,
+        ChapterEntity::class,
+        UserSelectionEntity::class,
+        GroupSelectionEntity::class,
+        TransactionEntity::class,
+        GroupUserCrossRef::class,
+        GroupEntity::class,
+        UserEntity::class
+    ],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -23,6 +30,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun chapterDao(): ChapterDao
 
     abstract fun transactionDao(): TransactionDao
+
+    abstract fun userDao(): UserDao
+
+    abstract fun groupDao(): GroupDao
 
     companion object {
         private var INSTANCE: AppDatabase? = null

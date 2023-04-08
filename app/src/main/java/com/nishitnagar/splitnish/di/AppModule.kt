@@ -2,14 +2,8 @@ package com.nishitnagar.splitnish.di
 
 import android.app.Application
 import com.nishitnagar.splitnish.data.AppDatabase
-import com.nishitnagar.splitnish.data.dao.AccountDao
-import com.nishitnagar.splitnish.data.dao.CategoryDao
-import com.nishitnagar.splitnish.data.dao.ChapterDao
-import com.nishitnagar.splitnish.data.dao.TransactionDao
-import com.nishitnagar.splitnish.data.repository.AccountRepository
-import com.nishitnagar.splitnish.data.repository.CategoryRepository
-import com.nishitnagar.splitnish.data.repository.ChapterRepository
-import com.nishitnagar.splitnish.data.repository.TransactionRepository
+import com.nishitnagar.splitnish.data.dao.*
+import com.nishitnagar.splitnish.data.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,6 +39,18 @@ class AppModule {
 
     @Singleton
     @Provides
+    fun provideUserRepository(userDao: UserDao): UserRepository {
+        return UserRepository(userDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGroupRepository(groupDao: GroupDao): GroupRepository {
+        return GroupRepository(groupDao)
+    }
+
+    @Singleton
+    @Provides
     fun provideAccountDao(appDatabase: AppDatabase): AccountDao {
         return appDatabase.accountDao()
     }
@@ -65,6 +71,18 @@ class AppModule {
     @Provides
     fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao {
         return appDatabase.transactionDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserDao(appDatabase: AppDatabase): UserDao {
+        return appDatabase.userDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideGroupDao(appDatabase: AppDatabase): GroupDao {
+        return appDatabase.groupDao()
     }
 
     @Singleton

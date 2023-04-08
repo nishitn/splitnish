@@ -7,6 +7,11 @@ import com.nishitnagar.splitnish.data.entity.*
 data class GroupSelection(
     @Embedded val groupSelectionEntity: GroupSelectionEntity,
     @Relation(
+        parentColumn = "group_id",
+        entityColumn = "id"
+    )
+    val groupEntity: GroupEntity,
+    @Relation(
         parentColumn = "chapter_id",
         entityColumn = "id"
     )
