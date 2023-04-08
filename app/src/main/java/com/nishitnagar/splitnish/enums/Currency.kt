@@ -1,4 +1,4 @@
-package com.nishitnagar.splitnish.data.enums
+package com.nishitnagar.splitnish.enums
 
 import com.nishitnagar.splitnish.data.exception.DataException
 

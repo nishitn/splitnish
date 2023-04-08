@@ -1,10 +1,10 @@
-package com.nishitnagar.splitnish
+package com.nishitnagar.splitnish.util
 
 import androidx.room.TypeConverter
-import com.nishitnagar.splitnish.data.enums.Currency
+import com.nishitnagar.splitnish.enums.Currency
 import java.time.LocalDateTime
 
-class Convertors {
+class RoomTypeConvertors {
     @TypeConverter
     fun toCurrency(value: String) = enumValueOf<Currency>(value)
 
