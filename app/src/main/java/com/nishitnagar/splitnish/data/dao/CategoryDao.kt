@@ -2,6 +2,7 @@ package com.nishitnagar.splitnish.data.dao
 
 import androidx.room.*
 import com.nishitnagar.splitnish.data.entity.CategoryEntity
+import com.nishitnagar.splitnish.data.model.Category
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,4 +21,7 @@ interface CategoryDao {
 
     @Query("SELECT * FROM Categories")
     fun getCategoryEntitiesFlow(): Flow<List<CategoryEntity>>
+
+    @Query("SELECT * FROM Categories")
+    fun getCategoriesFlow(): Flow<List<Category>>
 }

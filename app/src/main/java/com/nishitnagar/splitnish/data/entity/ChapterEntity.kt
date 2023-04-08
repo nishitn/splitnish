@@ -8,5 +8,6 @@ import java.util.*
 @Entity(tableName = "Chapters")
 data class ChapterEntity(
     @ColumnInfo(name = "id") @PrimaryKey val id: UUID = UUID.randomUUID(),
-    @ColumnInfo(name = "label") val label: String
+    @ColumnInfo(name = "label") val label: String,
+    @ColumnInfo(name = "group_id") val groupId: UUID? = null,
 )

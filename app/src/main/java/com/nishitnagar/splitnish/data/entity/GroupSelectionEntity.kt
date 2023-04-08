@@ -7,8 +7,8 @@ import java.util.*
 
 @Entity(tableName = "Group_Selections")
 data class GroupSelectionEntity(
-    @ColumnInfo(name = "id") @PrimaryKey val id: UUID = UUID.randomUUID(),
-    @ColumnInfo(name = "transaction_id") val transactionId: UUID,
+    @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "transaction_id") val transactionId: UUID,
+    @ColumnInfo(name = "group_id") val groupId: UUID,
     @ColumnInfo(name = "creator_id") val creatorId: UUID,
     @ColumnInfo(name = "chapter_id") val chapterId: UUID?,
     @ColumnInfo(name = "account_id") val accountId: UUID?,

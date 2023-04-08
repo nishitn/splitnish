@@ -3,7 +3,7 @@ package com.nishitnagar.splitnish.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.nishitnagar.splitnish.data.enums.Currency
+import com.nishitnagar.splitnish.enums.Currency
 import java.time.LocalDateTime
 import java.util.UUID
 
