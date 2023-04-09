@@ -1,10 +1,7 @@
 package com.nishitnagar.splitnish.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.nishitnagar.splitnish.data.entity.AccountEntity
-import com.nishitnagar.splitnish.data.entity.CategoryEntity
-import com.nishitnagar.splitnish.data.entity.ChapterEntity
-import com.nishitnagar.splitnish.data.entity.TransactionEntity
+import com.nishitnagar.splitnish.data.entity.*
 import com.nishitnagar.splitnish.data.repository.AccountRepository
 import com.nishitnagar.splitnish.data.repository.CategoryRepository
 import com.nishitnagar.splitnish.data.repository.ChapterRepository
@@ -12,6 +9,8 @@ import com.nishitnagar.splitnish.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +33,8 @@ class TransactionViewModel @Inject constructor(
 
     val transactions = transactionRepository.getTransactionsFlow()
 
+    val categories = categoryRepository.getCategoriesFlow()
+
     fun insert(accountEntity: AccountEntity) {
         ioScope.launch { accountRepository.insert(accountEntity) }
     }
@@ -44,6 +45,14 @@ class TransactionViewModel @Inject constructor(
 
     fun insert(chapterEntity: ChapterEntity) {
         ioScope.launch { chapterRepository.insert(chapterEntity) }
+    }
+
+    fun insert(userSelectionEntity: UserSelectionEntity) {
+        ioScope.launch { transactionRepository.insert(userSelectionEntity) }
+    }
+
+    fun insert(groupSelectionEntity: GroupSelectionEntity) {
+        ioScope.launch { transactionRepository.insert(groupSelectionEntity) }
     }
 
     fun insert(transactionEntity: TransactionEntity) {
@@ -72,5 +81,10 @@ class TransactionViewModel @Inject constructor(
 
     fun delete(chapterEntity: ChapterEntity) {
         ioScope.launch { chapterRepository.delete(chapterEntity) }
+    }
+
+    fun getUserChapterEntities() : Flow<List<ChapterEntity>> {
+        return chapterRepository.getChapterEntitiesFlow()
+            .map { it.filter { chapterEntity -> chapterEntity.groupId == null } }
     }
 }

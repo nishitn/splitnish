@@ -7,7 +7,9 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import com.nishitnagar.splitnish.ui.creator.UpdateCategoryComposable
 import com.nishitnagar.splitnish.ui.theme.SplitnishTheme
 import com.nishitnagar.splitnish.util.Helper
 import com.nishitnagar.splitnish.viewmodel.TransactionViewModel
@@ -27,6 +29,19 @@ class CreatorActivity : ComponentActivity() {
             SplitnishTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    val chapterEntities = transactionViewModel.chapterEntities.collectAsState(initial = emptyList())
+                    val categories = transactionViewModel.categories.collectAsState(initial = emptyList())
+
+                    UpdateCategoryComposable(
+                        providedEntity = null,
+                        chapterEntities = chapterEntities,
+                        categories = categories,
+                        onCreate = {
+                            transactionViewModel.insert(it)
+                            this.finish()
+                        },
+                        onDismiss = { this.finish() }
+                    )
                 }
             }
         }
