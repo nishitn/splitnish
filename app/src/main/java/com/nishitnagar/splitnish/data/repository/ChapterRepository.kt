@@ -2,6 +2,7 @@ package com.nishitnagar.splitnish.data.repository
 
 import com.nishitnagar.splitnish.data.dao.ChapterDao
 import com.nishitnagar.splitnish.data.entity.ChapterEntity
+import com.nishitnagar.splitnish.data.model.Chapter
 import kotlinx.coroutines.flow.Flow
 
 class ChapterRepository(
@@ -13,7 +14,7 @@ class ChapterRepository(
 
     suspend fun delete(chapterEntity: ChapterEntity) = chapterDao.delete(chapterEntity)
 
-    suspend fun getChapterEntities(): List<ChapterEntity> = chapterDao.getChapterEntities()
-
     fun getChapterEntitiesFlow(): Flow<List<ChapterEntity>> = chapterDao.getChapterEntitiesFlow()
+
+    fun getChaptersFlow(): Flow<List<Chapter>> = chapterDao.getChaptersFlow()
 }

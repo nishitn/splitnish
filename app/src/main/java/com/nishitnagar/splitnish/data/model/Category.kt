@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.nishitnagar.splitnish.data.entity.CategoryEntity
 import com.nishitnagar.splitnish.data.entity.ChapterEntity
+import com.nishitnagar.splitnish.data.entity.SubCategoryEntity
 
 data class Category(
     @Embedded val categoryEntity: CategoryEntity,
@@ -11,7 +12,7 @@ data class Category(
         parentColumn = "id",
         entityColumn = "parent_category_id",
     )
-    val subCategoryEntities: List<CategoryEntity>,
+    val subCategoryEntities: List<SubCategoryEntity>,
     @Relation(
         parentColumn = "chapter_id",
         entityColumn = "id",

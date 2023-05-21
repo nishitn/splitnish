@@ -12,6 +12,7 @@ import com.nishitnagar.splitnish.data.entity.*
     entities = [
         AccountEntity::class,
         CategoryEntity::class,
+        SubCategoryEntity::class,
         ChapterEntity::class,
         UserSelectionEntity::class,
         GroupSelectionEntity::class,

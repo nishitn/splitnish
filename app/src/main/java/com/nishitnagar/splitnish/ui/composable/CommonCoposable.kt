@@ -26,6 +26,26 @@ fun HeadingText(text: String) {
 }
 
 @Composable
+fun ConfirmationDialog(
+    title: @Composable () -> Unit,
+    text: @Composable () -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    confirmButtonText: String = "Confirm",
+    dismissButtonText: String = "Cancel"
+) {
+    AlertDialog(title = title, text = text, onDismissRequest = onDismiss, confirmButton = {
+        Button(onClick = onConfirm) {
+            Text(confirmButtonText)
+        }
+    }, dismissButton = {
+        TextButton(onClick = onDismiss) {
+            Text(dismissButtonText)
+        }
+    })
+}
+
+@Composable
 fun CreateDialog(
     title: @Composable () -> Unit,
     content: @Composable () -> Unit,
@@ -49,7 +69,9 @@ fun CreateDialog(
 fun CustomTextField(
     value: String, label: String, modifier: Modifier = Modifier, onValueChange: (String) -> Unit
 ) {
-    val state = remember { mutableStateOf(TextFieldValue(value)) }
+    val state = remember { mutableStateOf(TextFieldValue("")) }
+    state.value = TextFieldValue(value)
+
     OutlinedTextField(value = state.value,
         modifier = modifier.onFocusChanged { focusState ->
             if (focusState.isFocused) {

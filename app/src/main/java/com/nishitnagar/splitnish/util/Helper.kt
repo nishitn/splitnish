@@ -18,16 +18,16 @@ class Helper {
 
         val decimalFormat = DecimalFormat("#.##")
 
-        fun getCategoryText(categoryId: UUID, allCategories: State<List<Category>>): String {
-            val categoryNames = mutableListOf<String>()
-            var currentId: UUID? = categoryId
-            while (currentId != null) {
-                val currentUnit = allCategories.value.firstOrNull { it.categoryEntity.id == currentId }
-                    ?: throw DataException("")
-                categoryNames.add(0, currentUnit.categoryEntity.label)
-                currentId = currentUnit.categoryEntity.parentCategoryId
-            }
-            return StringUtils.join(categoryNames, " - ")
-        }
+//        fun getCategoryText(categoryId: UUID, allCategories: State<List<Category>>): String {
+//            val categoryNames = mutableListOf<String>()
+//            var currentId: UUID? = categoryId
+//            while (currentId != null) {
+//                val currentUnit = allCategories.value.firstOrNull { it.categoryEntity.id == currentId }
+//                    ?: throw DataException("")
+//                categoryNames.add(0, currentUnit.categoryEntity.label)
+//                currentId = currentUnit.categoryEntity.parentCategoryId
+//            }
+//            return StringUtils.join(categoryNames, " - ")
+//        }
     }
 }

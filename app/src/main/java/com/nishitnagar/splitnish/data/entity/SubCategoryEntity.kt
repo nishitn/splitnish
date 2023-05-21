@@ -3,12 +3,11 @@ package com.nishitnagar.splitnish.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
+import java.util.UUID
 
-@Entity(tableName = "Categories")
-data class CategoryEntity(
+@Entity(tableName = "SubCategories")
+data class SubCategoryEntity(
     @ColumnInfo(name = "id") @PrimaryKey val id: UUID = UUID.randomUUID(),
     @ColumnInfo(name = "label") val label: String,
-    @ColumnInfo(name = "group_id") val groupId: UUID? = null,
-    @ColumnInfo(name = "chapter_id") val chapterId: UUID? = null,
+    @ColumnInfo(name = "parent_category_id") var parentCategoryId: UUID? = null,
 )

@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">splitnish</string>
+
+    <string name="account_entity">Account Entity</string>
+    <string name="category_entity">Category Entity</string>
+    <string name="sub_category_entity">Sub-Category Entity</string>
+    <string name="chapter_entity">Chapter Entity</string>
+    <string name="transaction_entity">Transaction Entity</string>
+    <string name="user_entity">User Entity</string>
+
+    <string name="account">Account</string>
+    <string name="category">Category</string>
+    <string name="sub_category">Sub-Category</string>
+    <string name="chapter">Chapter</string>
+    <string name="transaction">Transaction</string>
+
+    <string name="no_selection">No Selection</string>
 </resources>

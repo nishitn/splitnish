@@ -27,13 +27,18 @@ class TransactionViewModel @Inject constructor(
 
     val categoryEntities = categoryRepository.getCategoryEntitiesFlow()
 
+    val subCategoryEntities = categoryRepository.getSubCategoryEntitiesFlow()
+
     val chapterEntities = chapterRepository.getChapterEntitiesFlow()
 
     val transactionEntities = transactionRepository.getTransactionEntitiesFlow()
 
+    val categories = categoryRepository.getCategoriesFlow()
+
+    val chapters = chapterRepository.getChaptersFlow()
+
     val transactions = transactionRepository.getTransactionsFlow()
 
-    val categories = categoryRepository.getCategoriesFlow()
 
     fun insert(accountEntity: AccountEntity) {
         ioScope.launch { accountRepository.insert(accountEntity) }
@@ -41,6 +46,10 @@ class TransactionViewModel @Inject constructor(
 
     fun insert(categoryEntity: CategoryEntity) {
         ioScope.launch { categoryRepository.insert(categoryEntity) }
+    }
+
+    fun insert(subCategoryEntity: SubCategoryEntity) {
+        ioScope.launch { categoryRepository.insert(subCategoryEntity) }
     }
 
     fun insert(chapterEntity: ChapterEntity) {
@@ -67,6 +76,10 @@ class TransactionViewModel @Inject constructor(
         ioScope.launch { categoryRepository.update(categoryEntity) }
     }
 
+    fun update(subCategoryEntity: SubCategoryEntity) {
+        ioScope.launch { categoryRepository.update(subCategoryEntity) }
+    }
+
     fun update(chapterEntity: ChapterEntity) {
         ioScope.launch { chapterRepository.update(chapterEntity) }
     }
@@ -77,6 +90,10 @@ class TransactionViewModel @Inject constructor(
 
     fun delete(categoryEntity: CategoryEntity) {
         ioScope.launch { categoryRepository.delete(categoryEntity) }
+    }
+
+    fun delete(subCategoryEntity: SubCategoryEntity) {
+        ioScope.launch { categoryRepository.delete(subCategoryEntity) }
     }
 
     fun delete(chapterEntity: ChapterEntity) {
