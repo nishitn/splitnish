@@ -13,8 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.nishitnagar.splitnish.data.entity.AccountEntity
 import com.nishitnagar.splitnish.data.entity.CategoryEntity
+import com.nishitnagar.splitnish.data.entity.ChapterEntity
 import com.nishitnagar.splitnish.data.entity.SubCategoryEntity
+import com.nishitnagar.splitnish.data.entity.TransactionEntity
+import com.nishitnagar.splitnish.data.exception.DataException
 import com.nishitnagar.splitnish.enums.BundleKeys
 import com.nishitnagar.splitnish.ui.creator.UpdateCategoryComposable
 import com.nishitnagar.splitnish.ui.theme.SplitnishTheme
@@ -67,6 +71,37 @@ fun OpenUpdateComposable(
     val transactions = transactionViewModel.transactions.collectAsState(initial = listOf())
 
     val activity = LocalContext.current as Activity
+
+    val onCreate: (Any) -> Unit = {
+        when (it) {
+            is AccountEntity -> transactionViewModel.insert(it)
+            is CategoryEntity -> transactionViewModel.insert(it)
+            is SubCategoryEntity -> transactionViewModel.insert(it)
+            is ChapterEntity -> transactionViewModel.insert(it)
+            is TransactionEntity -> throw DataException("TODO")
+        }
+    }
+
+    val onUpdate: (Any) -> Unit = {
+        when (it) {
+            is AccountEntity -> transactionViewModel.update(it)
+            is CategoryEntity -> transactionViewModel.update(it)
+            is SubCategoryEntity -> transactionViewModel.update(it)
+            is ChapterEntity -> transactionViewModel.update(it)
+            is TransactionEntity -> throw DataException("TODO")
+        }
+    }
+
+    val onDelete: (Any) -> Unit = {
+        when (it) {
+            is AccountEntity -> transactionViewModel.delete(it)
+            is CategoryEntity -> transactionViewModel.delete(it)
+            is SubCategoryEntity -> transactionViewModel.delete(it)
+            is ChapterEntity -> transactionViewModel.delete(it)
+            is TransactionEntity -> throw DataException("TODO")
+        }
+    }
+
     when (inputEntityResource) {
         R.string.category_entity -> {
             val providedEntity =
@@ -74,24 +109,9 @@ fun OpenUpdateComposable(
             UpdateCategoryComposable(providedEntity = providedEntity,
                 chapterEntities = chapterEntities,
                 subCategoryEntities = subCategoryEntities,
-                onCreate = {
-                    when (it) {
-                        is CategoryEntity -> transactionViewModel.insert(it)
-                        is SubCategoryEntity -> transactionViewModel.insert(it)
-                    }
-                },
-                onUpdate = {
-                    when (it) {
-                        is CategoryEntity -> transactionViewModel.update(it)
-                        is SubCategoryEntity -> transactionViewModel.update(it)
-                    }
-                },
-                onDelete = {
-                    when (it) {
-                        is CategoryEntity -> transactionViewModel.delete(it)
-                        is SubCategoryEntity -> transactionViewModel.delete(it)
-                    }
-                },
+                onCreate = onCreate,
+                onUpdate = onUpdate,
+                onDelete = onDelete,
                 onDismiss = { activity.finish() })
         }
 

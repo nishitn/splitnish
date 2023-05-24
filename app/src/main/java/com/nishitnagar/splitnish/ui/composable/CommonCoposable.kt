@@ -7,9 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextRange
@@ -69,22 +67,11 @@ fun CreateDialog(
 fun CustomTextField(
     value: String, label: String, modifier: Modifier = Modifier, onValueChange: (String) -> Unit
 ) {
-    val state = remember { mutableStateOf(TextFieldValue("")) }
-    state.value = TextFieldValue(value)
-
-    OutlinedTextField(value = state.value,
-        modifier = modifier.onFocusChanged { focusState ->
-            if (focusState.isFocused) {
-                val text = state.value.text
-                state.value = state.value.copy(selection = TextRange(0, text.length))
-            }
-        },
+    OutlinedTextField(value = value,
+        modifier = modifier,
         label = { Text(text = label) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onValueChange = {
-            state.value = it
-            onValueChange(state.value.text)
-        },
+        onValueChange = onValueChange,
         singleLine = true
     )
 }

@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -38,13 +37,6 @@ import com.nishitnagar.splitnish.ui.composable.ConfirmationDialog
 import com.nishitnagar.splitnish.ui.composable.CreateDialog
 import com.nishitnagar.splitnish.ui.composable.CustomPopupOpenButton
 import com.nishitnagar.splitnish.ui.composable.CustomTextField
-import java.util.UUID
-
-private const val ID = "id"
-private const val LABEL = "label"
-private const val CHAPTER = "chapter"
-private const val SUB_CATEGORY_ENTITIES = "subCategoryEntities"
-private const val NEW_SUB_CATEGORY_ENTITIES = "newSubCategoryEntities"
 
 @Composable
 fun UpdateCategoryComposable(
@@ -56,14 +48,25 @@ fun UpdateCategoryComposable(
     onDelete: (Any) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val categoryEntityState = remember { mutableStateOf(providedEntity ?: CategoryEntity(label = "")) }
-    val dataMap = loadProvidedEntity(providedEntity, chapterEntities, subCategoryEntities)
-    val labelState = dataMap[LABEL] as MutableState<String>
-    val selectedChapter = dataMap[CHAPTER] as MutableState<ChapterEntity?>
-    val selectedSubCategoryEntities = dataMap[SUB_CATEGORY_ENTITIES] as MutableState<List<SubCategoryEntity>>
-
+    val categoryEntityState = remember { mutableStateOf(CategoryEntity(label = "")) }
+    if (providedEntity != null) {
+        categoryEntityState.value = providedEntity
+    }
+    val selectedChapter = remember {
+        derivedStateOf {
+            if (categoryEntityState.value.chapterId != null) {
+                chapterEntities.value.first { it.id == categoryEntityState.value.chapterId }
+            } else {
+                null
+            }
+        }
+    }
+    val selectedSubCategoryEntities = remember {
+        derivedStateOf {
+            subCategoryEntities.value.filter { it.parentCategoryId == categoryEntityState.value.id }
+        }
+    }
     val newSubCategoryEntities = remember { mutableStateListOf<SubCategoryEntity>() }
-    dataMap[NEW_SUB_CATEGORY_ENTITIES] = newSubCategoryEntities
 
     val selectChapterPopupVisibilityState = remember { mutableStateOf(VisibilityState.HIDDEN) }
 
@@ -74,46 +77,23 @@ fun UpdateCategoryComposable(
             item { SelectChapterRow(selectedChapter, selectChapterPopupVisibilityState) }
             item { SelectSubCategoryEntitiesRow(selectedSubCategoryEntities, newSubCategoryEntities, onDelete) }
         }
-        ButtonsRow(dataMap = dataMap, onCreate = onCreate, onUpdate = onUpdate, onDismiss = onDismiss)
+        ButtonsRow(
+            isEntityProvided = providedEntity != null,
+            categoryEntityState = categoryEntityState,
+            newSubCategoryEntities = newSubCategoryEntities,
+            onCreate = onCreate,
+            onUpdate = onUpdate,
+            onDismiss = onDismiss,
+        )
     }
 
     ControlSelectPopup(visibilityState = selectChapterPopupVisibilityState) {
         SelectChapterPopup(
             visibilityState = selectChapterPopupVisibilityState,
             chapterEntities = chapterEntities,
-            selectedChapter = selectedChapter,
+            categoryEntityState = categoryEntityState,
         )
     }
-}
-
-@Composable
-fun loadProvidedEntity(
-    providedEntity: CategoryEntity?,
-    chapterEntities: State<List<ChapterEntity>>,
-    subCategoryEntities: State<List<SubCategoryEntity>>,
-): MutableMap<String, Any> {
-    val dataMap = mutableMapOf<String, Any>()
-
-    dataMap[ID] = UUID.randomUUID()
-    dataMap[LABEL] = remember { mutableStateOf("") }
-    dataMap[CHAPTER] = remember { mutableStateOf<ChapterEntity?>(null) }
-    dataMap[SUB_CATEGORY_ENTITIES] = remember { mutableStateOf<List<SubCategoryEntity>>(emptyList()) }
-
-    if (providedEntity != null) {
-        dataMap[ID] = providedEntity.id
-
-        (dataMap[LABEL] as MutableState<String>).value = providedEntity.label
-
-        if (providedEntity.chapterId != null) {
-            (dataMap[CHAPTER] as MutableState<ChapterEntity?>).value =
-                chapterEntities.value.first { it.id == providedEntity.chapterId }
-        }
-
-        (dataMap[SUB_CATEGORY_ENTITIES] as MutableState<List<SubCategoryEntity>>).value =
-            subCategoryEntities.value.filter { it.parentCategoryId == providedEntity.id }
-    }
-
-    return dataMap
 }
 
 // region Label Row
@@ -125,9 +105,10 @@ fun SelectLabelRow(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "Label a${categoryEntityState.value.label}")
-        CustomTextField(value = categoryEntityState.value.label, label = "",
-            onValueChange = { categoryEntityState.value = categoryEntityState.value.copy(label = it) })
+        Text(text = "Label")
+        CustomTextField(value = categoryEntityState.value.label, label = "", onValueChange = {
+            categoryEntityState.value = categoryEntityState.value.copy(label = it)
+        })
     }
 }
 
@@ -137,10 +118,10 @@ fun SelectLabelRow(
 
 @Composable
 fun SelectChapterRow(
-    selectedChapter: MutableState<ChapterEntity?>,
+    selectedChapter: State<ChapterEntity?>,
     visibilityState: MutableState<VisibilityState>,
 ) {
-    val label = selectedChapter.value?.label ?: "CHAPTER"
+    val label = selectedChapter.value?.label ?: stringResource(R.string.no_selection)
 
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -154,7 +135,7 @@ fun SelectChapterRow(
 fun SelectChapterPopup(
     visibilityState: MutableState<VisibilityState>,
     chapterEntities: State<List<ChapterEntity>>,
-    selectedChapter: MutableState<ChapterEntity?>,
+    categoryEntityState: MutableState<CategoryEntity>,
 ) {
     val onDismiss = { visibilityState.value = VisibilityState.HIDDEN }
 
@@ -163,10 +144,13 @@ fun SelectChapterPopup(
         content = {
             LazyColumn {
                 item {
-                    SelectChapterPopupRow(null, selectedChapter, onDismiss)
+                    SelectChapterPopupRow(null, onDismiss)
                 }
                 items(chapterEntities.value) {
-                    SelectChapterPopupRow(it, selectedChapter, onDismiss)
+                    SelectChapterPopupRow(it, onSelect = {
+                        categoryEntityState.value = categoryEntityState.value.copy(chapterId = it.id)
+                        onDismiss()
+                    })
                 }
             }
         },
@@ -177,21 +161,21 @@ fun SelectChapterPopup(
 
 @Composable
 fun SelectChapterPopupRow(
-    chapterEntity: ChapterEntity?, selectedChapter: MutableState<ChapterEntity?>, onDismiss: () -> Unit
+    chapterEntity: ChapterEntity?,
+    onSelect: () -> Unit,
 ) {
     Row(modifier = Modifier
         .height(56.dp)
         .fillMaxWidth()
         .clickable {
-            selectedChapter.value = chapterEntity
-            onDismiss()
+            onSelect()
         }) {
         Box(
             contentAlignment = Alignment.Center, modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
         ) {
-            val chapterLabel = chapterEntity?.label ?: "CHAPTER"
+            val chapterLabel = chapterEntity?.label ?: stringResource(R.string.no_selection)
             Text(text = chapterLabel, modifier = Modifier.fillMaxWidth())
         }
     }
@@ -203,7 +187,7 @@ fun SelectChapterPopupRow(
 
 @Composable
 fun SelectSubCategoryEntitiesRow(
-    selectedSubCategoryEntities: MutableState<List<SubCategoryEntity>>,
+    selectedSubCategoryEntities: State<List<SubCategoryEntity>>,
     newSubCategoryEntities: SnapshotStateList<SubCategoryEntity>,
     onDelete: (Any) -> Unit,
 ) {
@@ -217,7 +201,7 @@ fun SelectSubCategoryEntitiesRow(
 
 @Composable
 fun SubCategoryEntitiesColumn(
-    selectedSubCategoryEntities: MutableState<List<SubCategoryEntity>>,
+    selectedSubCategoryEntities: State<List<SubCategoryEntity>>,
     newSubCategoryEntities: SnapshotStateList<SubCategoryEntity>,
     onDelete: (Any) -> Unit,
 ) {
@@ -245,19 +229,19 @@ fun SubCategoryEntityRow(
     subCategoryEntity: SubCategoryEntity,
     onDelete: (Any) -> Unit,
 ) {
-    val removePlayerPopupState = remember { mutableStateOf(VisibilityState.HIDDEN) }
+    val removeSubCategoryDialogState = remember { mutableStateOf(VisibilityState.HIDDEN) }
 
     Column {
         Row {
             Text(text = subCategoryEntity.label)
-            IconButton(onClick = { removePlayerPopupState.value = VisibilityState.VISIBLE }) {
-                Icon(Icons.Default.Delete, "Remove Sub-Category")
+            IconButton(onClick = { removeSubCategoryDialogState.value = VisibilityState.VISIBLE }) {
+                Icon(Icons.Default.Edit, "Edit Sub-Category")
             }
         }
         Divider(thickness = 1.dp)
     }
 
-    ControlConfirmDeleteDialog(removePlayerPopupState, subCategoryEntity, onDelete)
+    ControlConfirmDeleteDialog(removeSubCategoryDialogState, subCategoryEntity, onDelete)
 }
 
 @Composable
@@ -286,7 +270,8 @@ fun ControlConfirmDeleteDialog(
                 onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
         }
 
-        VisibilityState.HIDDEN -> {/* Do Nothing */
+        VisibilityState.HIDDEN -> {
+            /* Do Nothing */
         }
     }
 }
@@ -297,7 +282,7 @@ fun ControlCreateSubCategoryEntityDialog(
 ) {
     when (visibilityState.value) {
         VisibilityState.VISIBLE -> {
-            CreateSubCategoryEntityDialog(onCreate = {
+            UpdateSubCategoryEntityDialog(onCreate = {
                 onCreate(it)
                 visibilityState.value = VisibilityState.HIDDEN
             }, onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
@@ -309,12 +294,12 @@ fun ControlCreateSubCategoryEntityDialog(
 }
 
 @Composable
-fun CreateSubCategoryEntityDialog(onCreate: (SubCategoryEntity) -> Unit, onDismiss: () -> Unit) {
-    var label = ""
+fun UpdateSubCategoryEntityDialog(onCreate: (SubCategoryEntity) -> Unit, onDismiss: () -> Unit) {
+    val label = remember { mutableStateOf("") }
     CreateDialog(title = { Text("Create Sub Category") }, content = {
-        CustomTextField(value = label, label = "Label", onValueChange = { label = it })
+        CustomTextField(value = label.value, label = "Label", onValueChange = { label.value = it })
     }, onConfirm = {
-        onCreate(SubCategoryEntity(label = label))
+        onCreate(SubCategoryEntity(label = label.value))
     }, onDismiss = onDismiss
     )
 }
@@ -467,29 +452,31 @@ fun CreateSubCategoryEntityDialog(onCreate: (SubCategoryEntity) -> Unit, onDismi
 
 // endregion
 
-// region Create Button
+// region Create/Update Button
 
 @Composable
 fun ButtonsRow(
-    dataMap: MutableMap<String, Any>, onCreate: (Any) -> Unit, onUpdate: (Any) -> Unit, onDismiss: () -> Unit
+    isEntityProvided: Boolean,
+    categoryEntityState: MutableState<CategoryEntity>,
+    newSubCategoryEntities: SnapshotStateList<SubCategoryEntity>,
+    onCreate: (Any) -> Unit,
+    onUpdate: (Any) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Row {
-        val label = (dataMap[LABEL] as MutableState<String>).value
+        Button(enabled = categoryEntityState.value.label.isNotBlank(), onClick = {
 
-        Button(enabled = label.isNotBlank(), onClick = {
-            val id = dataMap[ID] as UUID
-            val chapter = (dataMap[CHAPTER] as MutableState<ChapterEntity?>).value
-            val newSubCategoryEntities = (dataMap[NEW_SUB_CATEGORY_ENTITIES] as SnapshotStateList<SubCategoryEntity>)
+            if (isEntityProvided) onUpdate(categoryEntityState.value) else onCreate(categoryEntityState.value)
 
-            val categoryEntity = CategoryEntity(id = id, label = label, chapterId = chapter?.id)
-
-            onCreate(categoryEntity)
-            newSubCategoryEntities.forEach { onCreate(SubCategoryEntity(label = it.label, parentCategoryId = id)) }
+            newSubCategoryEntities.forEach {
+                onCreate(SubCategoryEntity(label = it.label, parentCategoryId = categoryEntityState.value.id))
+            }
             newSubCategoryEntities.clear()
 
             onDismiss()
         }) {
-            Text(text = "Create")
+            val buttonLabel = stringResource(if(isEntityProvided) R.string.update else R.string.create)
+            Text(text = buttonLabel)
         }
         Button(onClick = { onDismiss() }) {
             Text(text = "Cancel")
