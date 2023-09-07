@@ -104,9 +104,9 @@ fun CustomNumberTextField(
 
 @Composable
 fun CustomPopupOpenButton(
-    label: String, modifier: Modifier = Modifier, onClick: () -> Unit
+    label: String, modifier: Modifier = Modifier, onClick: () -> Unit, enabled: Boolean  = true
 ) {
-    Button(onClick = onClick, modifier = modifier) {
+    Button(onClick = onClick, modifier = modifier, enabled = enabled) {
         Text(text = label)
     }
 }

@@ -12,7 +12,7 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -46,7 +46,7 @@ fun UpdateCategoryComposable(
     onCreate: (Any) -> Unit,
     onUpdate: (Any) -> Unit,
     onDelete: (Any) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val categoryEntityState = remember { mutableStateOf(CategoryEntity(label = "")) }
     if (providedEntity != null) {
@@ -73,11 +73,11 @@ fun UpdateCategoryComposable(
     Column {
         Text(text = "Create ${stringResource(R.string.category_entity)}")
         LazyColumn {
-            item { SelectLabelRow(categoryEntityState) }
-            item { SelectChapterRow(selectedChapter, selectChapterPopupVisibilityState) }
+            item { SelectCategoryLabelRow(categoryEntityState) }
+            item { SelectCategoryParentChapterRow(selectedChapter, selectChapterPopupVisibilityState) }
             item { SelectSubCategoryEntitiesRow(selectedSubCategoryEntities, newSubCategoryEntities, onDelete) }
         }
-        ButtonsRow(
+        CategoryUpdateButtonsRow(
             isEntityProvided = providedEntity != null,
             categoryEntityState = categoryEntityState,
             newSubCategoryEntities = newSubCategoryEntities,
@@ -99,7 +99,7 @@ fun UpdateCategoryComposable(
 // region Label Row
 
 @Composable
-fun SelectLabelRow(
+fun SelectCategoryLabelRow(
     categoryEntityState: MutableState<CategoryEntity>,
 ) {
     Row(
@@ -117,7 +117,7 @@ fun SelectLabelRow(
 // region Chapter Row
 
 @Composable
-fun SelectChapterRow(
+fun SelectCategoryParentChapterRow(
     selectedChapter: State<ChapterEntity?>,
     visibilityState: MutableState<VisibilityState>,
 ) {
@@ -127,7 +127,11 @@ fun SelectChapterRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "Chapter")
-        CustomPopupOpenButton(label = label, onClick = { visibilityState.value = VisibilityState.VISIBLE })
+        CustomPopupOpenButton(
+            label = label,
+            enabled = false,
+            onClick = { visibilityState.value = VisibilityState.VISIBLE }
+        )
     }
 }
 
@@ -218,7 +222,7 @@ fun SubCategoryEntitiesColumn(
                 }
             })
         }
-        AddMoreRow(addSubCategoryVisibilityState)
+        AddMoreSubCategoryRow(addSubCategoryVisibilityState)
     }
 
     ControlCreateSubCategoryEntityDialog(addSubCategoryVisibilityState, onCreate = { newSubCategoryEntities.add(it) })
@@ -238,14 +242,14 @@ fun SubCategoryEntityRow(
                 Icon(Icons.Default.Edit, "Edit Sub-Category")
             }
         }
-        Divider(thickness = 1.dp)
+        HorizontalDivider(thickness = 1.dp)
     }
 
     ControlConfirmDeleteDialog(removeSubCategoryDialogState, subCategoryEntity, onDelete)
 }
 
 @Composable
-fun AddMoreRow(visibilityState: MutableState<VisibilityState>) {
+fun AddMoreSubCategoryRow(visibilityState: MutableState<VisibilityState>) {
     Row {
         Button(onClick = { visibilityState.value = VisibilityState.VISIBLE }) {
             Text(text = "Add More")
@@ -455,7 +459,7 @@ fun UpdateSubCategoryEntityDialog(onCreate: (SubCategoryEntity) -> Unit, onDismi
 // region Create/Update Button
 
 @Composable
-fun ButtonsRow(
+fun CategoryUpdateButtonsRow(
     isEntityProvided: Boolean,
     categoryEntityState: MutableState<CategoryEntity>,
     newSubCategoryEntities: SnapshotStateList<SubCategoryEntity>,

@@ -21,11 +21,13 @@ import com.nishitnagar.splitnish.data.entity.TransactionEntity
 import com.nishitnagar.splitnish.data.exception.DataException
 import com.nishitnagar.splitnish.enums.BundleKeys
 import com.nishitnagar.splitnish.ui.creator.UpdateCategoryComposable
+import com.nishitnagar.splitnish.ui.creator.UpdateChapterComposable
 import com.nishitnagar.splitnish.ui.theme.SplitnishTheme
 import com.nishitnagar.splitnish.util.Helper
 import com.nishitnagar.splitnish.viewmodel.TransactionViewModel
 import com.nishitnagar.splitnish.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.Serializable
 import java.util.UUID
 
 @AndroidEntryPoint
@@ -35,6 +37,7 @@ class CreatorActivity : ComponentActivity() {
 
         val inputEntityResource = intent.extras?.getInt(BundleKeys.INT_RESOURCE.name)
         val providedEntityIdString = intent.extras?.getString(BundleKeys.ENTITY_ID.name)
+        val extraEntityData = intent.getSerializableExtra(BundleKeys.ENTITY_INPUT_DATA.name)
         val providedEntityId = if (providedEntityIdString != null) UUID.fromString(providedEntityIdString) else null
 
         val transactionViewModel: TransactionViewModel by viewModels()
@@ -48,6 +51,7 @@ class CreatorActivity : ComponentActivity() {
                     OpenUpdateComposable(
                         inputEntityResource = inputEntityResource,
                         providedEntityId = providedEntityId,
+                        extraEntityData = extraEntityData,
                         transactionViewModel = transactionViewModel
                     )
                 }
@@ -58,7 +62,10 @@ class CreatorActivity : ComponentActivity() {
 
 @Composable
 fun OpenUpdateComposable(
-    inputEntityResource: Int?, providedEntityId: UUID?, transactionViewModel: TransactionViewModel
+    inputEntityResource: Int?,
+    providedEntityId: UUID?,
+    extraEntityData: Serializable?,
+    transactionViewModel: TransactionViewModel
 ) {
     val accountEntities = transactionViewModel.accountEntities.collectAsState(initial = listOf())
     val categoryEntities = transactionViewModel.categoryEntities.collectAsState(initial = listOf())
@@ -106,15 +113,28 @@ fun OpenUpdateComposable(
         R.string.category_entity -> {
             val providedEntity =
                 if (providedEntityId != null) categoryEntities.value.firstOrNull { it.id == providedEntityId } else null
-            UpdateCategoryComposable(providedEntity = providedEntity,
+            UpdateCategoryComposable(
+                providedEntity = providedEntity,
                 chapterEntities = chapterEntities,
                 subCategoryEntities = subCategoryEntities,
+                onCreate = onCreate,
+                onUpdate = onUpdate,
+                onDelete = onDelete,
+                onDismiss = { activity.finish() },
+            )
+        }
+
+        R.string.chapter_entity -> {
+            val providedEntity =
+                if (providedEntityId != null) chapterEntities.value.firstOrNull { it.id == providedEntityId } else null
+            UpdateChapterComposable(providedEntity = providedEntity,
+                categoryEntities = categoryEntities,
                 onCreate = onCreate,
                 onUpdate = onUpdate,
                 onDelete = onDelete,
                 onDismiss = { activity.finish() })
         }
 
-        else -> Text(text = "Unknown")
+        else -> Text(text = "To be Implemented")
     }
 }
