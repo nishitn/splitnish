@@ -20,9 +20,10 @@ import com.nishitnagar.splitnish.data.entity.SubCategoryEntity
 import com.nishitnagar.splitnish.data.entity.TransactionEntity
 import com.nishitnagar.splitnish.data.exception.DataException
 import com.nishitnagar.splitnish.enums.BundleKeys
-import com.nishitnagar.splitnish.ui.creator.CreateChapterComposable
-import com.nishitnagar.splitnish.ui.creator.UpdateCategoryComposable
-import com.nishitnagar.splitnish.ui.creator.UpdateChapterComposable
+import com.nishitnagar.splitnish.ui.creator.AccountComposables
+import com.nishitnagar.splitnish.ui.creator.CategoryComposables
+import com.nishitnagar.splitnish.ui.creator.ChapterComposables
+import com.nishitnagar.splitnish.ui.creator.TransactionComposables
 import com.nishitnagar.splitnish.ui.theme.SplitnishTheme
 import com.nishitnagar.splitnish.util.Helper
 import com.nishitnagar.splitnish.viewmodel.TransactionViewModel
@@ -72,10 +73,7 @@ fun OpenUpdateComposable(
     val categoryEntities = transactionViewModel.categoryEntities.collectAsState(initial = listOf())
     val subCategoryEntities = transactionViewModel.subCategoryEntities.collectAsState(initial = listOf())
     val chapterEntities = transactionViewModel.chapterEntities.collectAsState(initial = listOf())
-    val transactionEntities = transactionViewModel.transactionEntities.collectAsState(initial = listOf())
 
-    val categories = transactionViewModel.categories.collectAsState(initial = listOf())
-    val chapters = transactionViewModel.categories.collectAsState(initial = listOf())
     val transactions = transactionViewModel.transactions.collectAsState(initial = listOf())
 
     val activity = LocalContext.current as Activity
@@ -86,7 +84,7 @@ fun OpenUpdateComposable(
             is CategoryEntity -> transactionViewModel.insert(it)
             is SubCategoryEntity -> transactionViewModel.insert(it)
             is ChapterEntity -> transactionViewModel.insert(it)
-            is TransactionEntity -> throw DataException("TODO")
+            is TransactionEntity -> transactionViewModel.insert(it)
         }
     }
 
@@ -114,7 +112,7 @@ fun OpenUpdateComposable(
         R.string.category_entity -> {
             val providedEntity =
                 if (providedEntityId != null) categoryEntities.value.firstOrNull { it.id == providedEntityId } else null
-            UpdateCategoryComposable(
+            CategoryComposables.Update(
                 providedEntity = providedEntity,
                 entityData = entityData,
                 chapterEntities = chapterEntities,
@@ -127,15 +125,48 @@ fun OpenUpdateComposable(
         }
 
         R.string.chapter_entity -> {
+            val providedEntity =
+                if (providedEntityId != null) chapterEntities.value.firstOrNull { it.id == providedEntityId } else null
+            ChapterComposables.Update(
+                providedEntity = providedEntity,
+                categoryEntities = categoryEntities,
+                onCreate = onCreate,
+                onUpdate = onUpdate,
+                onDelete = onDelete,
+                onDismiss = { activity.finish() },
+            )
+        }
+
+        R.string.account_entity -> {
+            val providedEntity =
+                if (providedEntityId != null) accountEntities.value.firstOrNull { it.id == providedEntityId } else null
+            AccountComposables.Update(
+                providedEntity = providedEntity,
+                onCreate = onCreate,
+                onUpdate = onUpdate,
+                onDelete = onDelete,
+                onDismiss = { activity.finish() },
+            )
+        }
+
+        R.string.transaction_entity -> {
             if (providedEntityId == null) {
-                CreateChapterComposable(onCreate = onCreate, onDismiss = { activity.finish() })
-            } else {
-                val providedEntity = chapterEntities.value.first { it.id == providedEntityId }
-                UpdateChapterComposable(providedEntity = providedEntity,
-                    categoryEntities = categoryEntities,
+                TransactionComposables.Update(
+                    providedEntity = null,
+                    onCreate = onCreate,
                     onUpdate = onUpdate,
                     onDelete = onDelete,
-                    onDismiss = { activity.finish() })
+                    onDismiss = { activity.finish() },
+                )
+            } else {
+                val providedEntity = transactions.value.first { it.transactionEntity.id == providedEntityId }
+                TransactionComposables.Update(
+                    providedEntity = providedEntity,
+                    onCreate = onCreate,
+                    onUpdate = onUpdate,
+                    onDelete = onDelete,
+                    onDismiss = { activity.finish() },
+                )
             }
         }
 
