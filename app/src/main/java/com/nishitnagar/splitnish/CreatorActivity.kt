@@ -20,6 +20,7 @@ import com.nishitnagar.splitnish.data.entity.SubCategoryEntity
 import com.nishitnagar.splitnish.data.entity.TransactionEntity
 import com.nishitnagar.splitnish.data.exception.DataException
 import com.nishitnagar.splitnish.enums.BundleKeys
+import com.nishitnagar.splitnish.ui.creator.CreateChapterComposable
 import com.nishitnagar.splitnish.ui.creator.UpdateCategoryComposable
 import com.nishitnagar.splitnish.ui.creator.UpdateChapterComposable
 import com.nishitnagar.splitnish.ui.theme.SplitnishTheme
@@ -37,7 +38,7 @@ class CreatorActivity : ComponentActivity() {
 
         val inputEntityResource = intent.extras?.getInt(BundleKeys.INT_RESOURCE.name)
         val providedEntityIdString = intent.extras?.getString(BundleKeys.ENTITY_ID.name)
-        val extraEntityData = intent.getSerializableExtra(BundleKeys.ENTITY_INPUT_DATA.name)
+        val entityData = intent.getSerializableExtra(BundleKeys.ENTITY_INPUT_DATA.name)
         val providedEntityId = if (providedEntityIdString != null) UUID.fromString(providedEntityIdString) else null
 
         val transactionViewModel: TransactionViewModel by viewModels()
@@ -51,7 +52,7 @@ class CreatorActivity : ComponentActivity() {
                     OpenUpdateComposable(
                         inputEntityResource = inputEntityResource,
                         providedEntityId = providedEntityId,
-                        extraEntityData = extraEntityData,
+                        entityData = entityData,
                         transactionViewModel = transactionViewModel
                     )
                 }
@@ -64,7 +65,7 @@ class CreatorActivity : ComponentActivity() {
 fun OpenUpdateComposable(
     inputEntityResource: Int?,
     providedEntityId: UUID?,
-    extraEntityData: Serializable?,
+    entityData: Serializable?,
     transactionViewModel: TransactionViewModel
 ) {
     val accountEntities = transactionViewModel.accountEntities.collectAsState(initial = listOf())
@@ -115,6 +116,7 @@ fun OpenUpdateComposable(
                 if (providedEntityId != null) categoryEntities.value.firstOrNull { it.id == providedEntityId } else null
             UpdateCategoryComposable(
                 providedEntity = providedEntity,
+                entityData = entityData,
                 chapterEntities = chapterEntities,
                 subCategoryEntities = subCategoryEntities,
                 onCreate = onCreate,
@@ -125,14 +127,16 @@ fun OpenUpdateComposable(
         }
 
         R.string.chapter_entity -> {
-            val providedEntity =
-                if (providedEntityId != null) chapterEntities.value.firstOrNull { it.id == providedEntityId } else null
-            UpdateChapterComposable(providedEntity = providedEntity,
-                categoryEntities = categoryEntities,
-                onCreate = onCreate,
-                onUpdate = onUpdate,
-                onDelete = onDelete,
-                onDismiss = { activity.finish() })
+            if (providedEntityId == null) {
+                CreateChapterComposable(onCreate = onCreate, onDismiss = { activity.finish() })
+            } else {
+                val providedEntity = chapterEntities.value.first { it.id == providedEntityId }
+                UpdateChapterComposable(providedEntity = providedEntity,
+                    categoryEntities = categoryEntities,
+                    onUpdate = onUpdate,
+                    onDelete = onDelete,
+                    onDismiss = { activity.finish() })
+            }
         }
 
         else -> Text(text = "To be Implemented")

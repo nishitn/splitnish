@@ -1,14 +1,10 @@
 package com.nishitnagar.splitnish.util
 
-import androidx.compose.runtime.State
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.nishitnagar.splitnish.data.entity.UserEntity
-import com.nishitnagar.splitnish.data.exception.DataException
-import com.nishitnagar.splitnish.data.model.Category
-import org.apache.commons.lang3.StringUtils
+import java.io.Serializable
 import java.text.DecimalFormat
-import java.util.UUID
 
 class Helper {
     companion object {
@@ -29,5 +25,15 @@ class Helper {
 //            }
 //            return StringUtils.join(categoryNames, " - ")
 //        }
+
+        fun getKeyFromSerializedMap(
+            entityData: Serializable?,
+            key: String,
+        ): String? {
+            return if(entityData != null) {
+                val map = entityData as HashMap<String, String>
+                map[key]
+            } else null
+        }
     }
 }

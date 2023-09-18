@@ -4,4 +4,5 @@ enum class BundleKeys {
     INT_RESOURCE,
     ENTITY_ID,
     ENTITY_INPUT_DATA,
+    CHAPTER_ID,
 }

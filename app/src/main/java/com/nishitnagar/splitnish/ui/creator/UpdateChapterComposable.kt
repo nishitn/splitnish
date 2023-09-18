@@ -32,17 +32,13 @@ import com.nishitnagar.splitnish.ui.composable.CustomTextField
 
 @Composable
 fun UpdateChapterComposable(
-    providedEntity: ChapterEntity?,
+    providedEntity: ChapterEntity,
     categoryEntities: State<List<CategoryEntity>>,
-    onCreate: (Any) -> Unit,
     onUpdate: (Any) -> Unit,
     onDelete: (Any) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val chapterEntityState = remember { mutableStateOf(ChapterEntity(label = "")) }
-    if (providedEntity != null) {
-        chapterEntityState.value = providedEntity
-    }
+    val chapterEntityState = remember { mutableStateOf(providedEntity) }
 
     val selectedCategoryEntities = remember {
         derivedStateOf {
@@ -51,24 +47,26 @@ fun UpdateChapterComposable(
     }
 
     val context = LocalContext.current
-
     val onCreateNewCategory = {
+        val entityData = HashMap<String, String>()
+        entityData[BundleKeys.CHAPTER_ID.name] = chapterEntityState.value.id.toString()
+
         val intent = Intent(context, CreatorActivity::class.java)
         intent.putExtra(BundleKeys.INT_RESOURCE.name, R.string.category_entity)
+        intent.putExtra(BundleKeys.ENTITY_INPUT_DATA.name, entityData)
         context.startActivity(intent)
     }
 
     Column {
-        Text(text = "Create ${stringResource(R.string.chapter_entity)}")
+        Text(text = "${stringResource(R.string.update)} ${stringResource(R.string.chapter_entity)}")
         LazyColumn {
             item { SelectChapterLabelRow(chapterEntityState) }
             item { SelectCategoryEntitiesRow(selectedCategoryEntities, onCreateNewCategory, onDelete) }
         }
         ChapterUpdateButtonsRow(
-            isEntityProvided = providedEntity != null,
             chapterEntityState = chapterEntityState,
-            onCreate = onCreate,
             onUpdate = onUpdate,
+            onDelete = onDelete,
             onDismiss = onDismiss,
         )
     }
@@ -178,29 +176,34 @@ fun ControlConfirmDeleteDialog(
 
 // endregion
 
-// region Create/Update Button
+// region Update Button
 
 @Composable
 fun ChapterUpdateButtonsRow(
-    isEntityProvided: Boolean,
     chapterEntityState: MutableState<ChapterEntity>,
-    onCreate: (Any) -> Unit,
     onUpdate: (Any) -> Unit,
+    onDelete: (Any) -> Unit,
     onDismiss: () -> Unit,
 ) {
     Row {
         Button(
             enabled = chapterEntityState.value.label.isNotBlank(),
             onClick = {
-                if (isEntityProvided) onUpdate(chapterEntityState.value) else onCreate(chapterEntityState.value)
+                onUpdate(chapterEntityState.value)
                 onDismiss()
             }
         ) {
-            val buttonLabel = stringResource(if(isEntityProvided) R.string.update else R.string.create)
+            val buttonLabel = stringResource(R.string.update)
             Text(text = buttonLabel)
         }
         Button(onClick = { onDismiss() }) {
             Text(text = stringResource(R.string.cancel))
+        }
+        Button(onClick = {
+            onDelete(chapterEntityState.value)
+            onDismiss()
+        }) {
+            Text(text = stringResource(R.string.delete))
         }
     }
 }

@@ -32,15 +32,20 @@ import com.nishitnagar.splitnish.R
 import com.nishitnagar.splitnish.data.entity.CategoryEntity
 import com.nishitnagar.splitnish.data.entity.ChapterEntity
 import com.nishitnagar.splitnish.data.entity.SubCategoryEntity
+import com.nishitnagar.splitnish.enums.BundleKeys
 import com.nishitnagar.splitnish.enums.VisibilityState
 import com.nishitnagar.splitnish.ui.composable.ConfirmationDialog
 import com.nishitnagar.splitnish.ui.composable.CreateDialog
 import com.nishitnagar.splitnish.ui.composable.CustomPopupOpenButton
 import com.nishitnagar.splitnish.ui.composable.CustomTextField
+import com.nishitnagar.splitnish.util.Helper
+import java.io.Serializable
+import java.util.UUID
 
 @Composable
 fun UpdateCategoryComposable(
     providedEntity: CategoryEntity?,
+    entityData: Serializable?,
     chapterEntities: State<List<ChapterEntity>>,
     subCategoryEntities: State<List<SubCategoryEntity>>,
     onCreate: (Any) -> Unit,
@@ -48,10 +53,12 @@ fun UpdateCategoryComposable(
     onDelete: (Any) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val categoryEntityState = remember { mutableStateOf(CategoryEntity(label = "")) }
+    val selectedChapterId = UUID.fromString(Helper.getKeyFromSerializedMap(entityData, BundleKeys.CHAPTER_ID.name))
+    val categoryEntityState = remember { mutableStateOf(CategoryEntity(label = "", chapterId = selectedChapterId)) }
     if (providedEntity != null) {
         categoryEntityState.value = providedEntity
     }
+
     val selectedChapter = remember {
         derivedStateOf {
             if (categoryEntityState.value.chapterId != null) {
@@ -84,6 +91,7 @@ fun UpdateCategoryComposable(
             onCreate = onCreate,
             onUpdate = onUpdate,
             onDismiss = onDismiss,
+            onDelete = onDelete,
         )
     }
 
@@ -465,6 +473,7 @@ fun CategoryUpdateButtonsRow(
     newSubCategoryEntities: SnapshotStateList<SubCategoryEntity>,
     onCreate: (Any) -> Unit,
     onUpdate: (Any) -> Unit,
+    onDelete: (Any) -> Unit,
     onDismiss: () -> Unit,
 ) {
     Row {
@@ -479,11 +488,19 @@ fun CategoryUpdateButtonsRow(
 
             onDismiss()
         }) {
-            val buttonLabel = stringResource(if(isEntityProvided) R.string.update else R.string.create)
+            val buttonLabel = stringResource(if (isEntityProvided) R.string.update else R.string.create)
             Text(text = buttonLabel)
         }
         Button(onClick = { onDismiss() }) {
             Text(text = "Cancel")
+        }
+        if (isEntityProvided) {
+            Button(onClick = {
+                onDelete(categoryEntityState.value)
+                onDismiss()
+            }) {
+                Text(text = "Delete")
+            }
         }
     }
 }
