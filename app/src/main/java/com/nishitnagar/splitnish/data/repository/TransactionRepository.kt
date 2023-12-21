@@ -8,19 +8,24 @@ import com.nishitnagar.splitnish.data.model.Transaction
 import kotlinx.coroutines.flow.Flow
 
 class TransactionRepository(
-    private val transactionDao: TransactionDao
+  private val transactionDao: TransactionDao,
 ) {
-    suspend fun insert(userSelectionEntity: UserSelectionEntity) = transactionDao.insert(userSelectionEntity)
+  suspend fun insert(userSelectionEntity: UserSelectionEntity) =
+    transactionDao.insert(userSelectionEntity)
 
-    suspend fun insert(groupSelectionEntity: GroupSelectionEntity) = transactionDao.insert(groupSelectionEntity)
+  suspend fun insert(groupSelectionEntity: GroupSelectionEntity) =
+    transactionDao.insert(groupSelectionEntity)
 
-    suspend fun insert(transactionEntity: TransactionEntity) = transactionDao.insert(transactionEntity)
+  suspend fun insert(transactionEntity: TransactionEntity) =
+    transactionDao.insert(transactionEntity)
 
-    suspend fun getTransactionEntities(): List<TransactionEntity> = transactionDao.getTransactionEntities()
+  suspend fun getTransactionEntities(): List<TransactionEntity> =
+    transactionDao.getTransactionEntities()
 
-    fun getTransactionEntitiesFlow(): Flow<List<TransactionEntity>> = transactionDao.getTransactionEntitiesFlow()
+  fun getTransactionEntitiesFlow(): Flow<List<TransactionEntity>> =
+    transactionDao.getTransactionEntitiesFlow()
 
-    suspend fun getTransactions(): List<Transaction> = transactionDao.getTransactions()
+  suspend fun getTransactions(): List<Transaction> = transactionDao.getTransactions()
 
-    fun getTransactionsFlow(): Flow<List<Transaction>> = transactionDao.getTransactionsFlow()
+  fun getTransactionsFlow(): Flow<List<Transaction>> = transactionDao.getTransactionsFlow()
 }

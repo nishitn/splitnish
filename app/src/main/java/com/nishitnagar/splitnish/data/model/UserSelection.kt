@@ -8,20 +8,20 @@ import com.nishitnagar.splitnish.data.entity.ChapterEntity
 import com.nishitnagar.splitnish.data.entity.UserSelectionEntity
 
 data class UserSelection(
-    @Embedded val userSelectionEntity: UserSelectionEntity,
-    @Relation(
-        parentColumn = "chapter_id",
-        entityColumn = "id"
-    )
-    val chapterEntity: ChapterEntity,
-    @Relation(
-        parentColumn = "account_id",
-        entityColumn = "id"
-    )
-    val accountEntity: AccountEntity,
-    @Relation(
-        parentColumn = "category_id",
-        entityColumn = "id"
-    )
-    val categoryEntity: CategoryEntity
+  @Embedded val userSelectionEntity: UserSelectionEntity,
+  @Relation(
+    parentColumn = "chapter_id",
+    entityColumn = "id"
+  )
+  val chapterEntity: ChapterEntity,
+  @Relation(
+    parentColumn = "account_id",
+    entityColumn = "id"
+  )
+  val accountEntity: AccountEntity,
+  @Relation(
+    parentColumn = "category_id",
+    entityColumn = "id"
+  )
+  val categoryEntity: CategoryEntity,
 )

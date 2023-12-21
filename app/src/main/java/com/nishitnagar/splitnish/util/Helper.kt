@@ -7,12 +7,12 @@ import java.io.Serializable
 import java.text.DecimalFormat
 
 class Helper {
-    companion object {
-        val gson: Gson = GsonBuilder().setPrettyPrinting().serializeNulls().create()
+  companion object {
+    val gson: Gson = GsonBuilder().setPrettyPrinting().serializeNulls().create()
 
-        var activeUserEntity: UserEntity? = null
+    var activeUserEntity: UserEntity? = null
 
-        val decimalFormat = DecimalFormat("#.##")
+    val decimalFormat = DecimalFormat("#.##")
 
 //        fun getCategoryText(categoryId: UUID, allCategories: State<List<Category>>): String {
 //            val categoryNames = mutableListOf<String>()
@@ -26,14 +26,14 @@ class Helper {
 //            return StringUtils.join(categoryNames, " - ")
 //        }
 
-        fun getKeyFromSerializedMap(
-            entityData: Serializable?,
-            key: String,
-        ): String? {
-            return if(entityData != null) {
-                val map = entityData as HashMap<String, String>
-                map[key]
-            } else null
-        }
+    fun getKeyFromSerializedMap(
+      entityData: Serializable?,
+      key: String,
+    ): String? {
+      return if (entityData != null) {
+        val map = entityData as HashMap<String, String>
+        map[key]
+      } else null
     }
+  }
 }

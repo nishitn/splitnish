@@ -9,15 +9,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-    @Insert
-    suspend fun insert(userEntity: UserEntity)
+  @Insert
+  suspend fun insert(userEntity: UserEntity)
 
-    @Update
-    suspend fun update(userEntity: UserEntity)
+  @Update
+  suspend fun update(userEntity: UserEntity)
 
-    @Query("SELECT * FROM Users WHERE is_active LIMIT 1")
-    suspend fun getActiveUserEntity(): UserEntity?
+  @Query("SELECT * FROM Users WHERE is_active LIMIT 1")
+  suspend fun getActiveUserEntity(): UserEntity?
 
-    @Query("SELECT * FROM Users")
-    fun getUserEntitiesFlow(): Flow<List<UserEntity>>
+  @Query("SELECT * FROM Users")
+  fun getUserEntitiesFlow(): Flow<List<UserEntity>>
 }

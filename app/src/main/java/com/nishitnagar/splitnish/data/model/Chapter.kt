@@ -6,10 +6,10 @@ import com.nishitnagar.splitnish.data.entity.CategoryEntity
 import com.nishitnagar.splitnish.data.entity.ChapterEntity
 
 data class Chapter(
-    @Embedded val chapterEntity: ChapterEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "chapter_id",
-    )
-    val categoryEntities: List<CategoryEntity>
+  @Embedded val chapterEntity: ChapterEntity,
+  @Relation(
+    parentColumn = "id",
+    entityColumn = "chapter_id",
+  )
+  val categoryEntities: List<CategoryEntity>,
 )

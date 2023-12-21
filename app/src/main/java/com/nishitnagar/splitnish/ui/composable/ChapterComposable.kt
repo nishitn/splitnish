@@ -21,99 +21,105 @@ import com.nishitnagar.splitnish.util.Helper
 fun ControlChapterScreen(
     visibilityState: MutableState<VisibilityState>,
     chapterEntities: State<List<ChapterEntity>>,
-    onCreate: (ChapterEntity) -> Unit
+    onCreate: (ChapterEntity) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            ChapterScreen(chapterEntities = chapterEntities,
-                onCreate = onCreate,
-                onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-        VisibilityState.HIDDEN -> {
-            /* Do Nothing */
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      ChapterScreen(chapterEntities = chapterEntities,
+                    onCreate = onCreate,
+                    onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {
+      /* Do Nothing */
+    }
+  }
 }
 
 @Composable
 fun ChapterScreen(
-    chapterEntities: State<List<ChapterEntity>>, onCreate: (ChapterEntity) -> Unit, onDismiss: () -> Unit
+    chapterEntities: State<List<ChapterEntity>>,
+    onCreate: (ChapterEntity) -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    val dialogVisibilityState = remember { mutableStateOf(VisibilityState.HIDDEN) }
-    Column {
-        Row {
-            Button(onClick = { dialogVisibilityState.value = VisibilityState.VISIBLE }) {
-                Text("Create Chapter")
-            }
-            Button(onClick = onDismiss) {
-                Text("Dismiss")
-            }
-        }
-        ChapterLazyColumn(chapterEntities = chapterEntities)
+  val dialogVisibilityState = remember { mutableStateOf(VisibilityState.HIDDEN) }
+  Column {
+    Row {
+      Button(onClick = { dialogVisibilityState.value = VisibilityState.VISIBLE }) {
+        Text("Create Chapter")
+      }
+      Button(onClick = onDismiss) {
+        Text("Dismiss")
+      }
     }
+    ChapterLazyColumn(chapterEntities = chapterEntities)
+  }
 
-    ControlCreateChapterEntityDialog(dialogVisibilityState, onCreate = onCreate)
+  ControlCreateChapterEntityDialog(dialogVisibilityState, onCreate = onCreate)
 }
 
 @Composable
-fun ChapterLazyColumn(@PreviewParameter(ChapterEntitiesProvider::class) chapterEntities: State<List<ChapterEntity>>) {
-    LazyColumn {
-        item {
-            HeadingText(text = "Chapter Entities")
-        }
-        items(chapterEntities.value) { chapterEntity ->
-            ChapterRow(chapterEntity)
-        }
+fun ChapterLazyColumn(
+    @PreviewParameter(ChapterEntitiesProvider::class) chapterEntities: State<List<ChapterEntity>>,
+) {
+  LazyColumn {
+    item {
+      HeadingText(text = "Chapter Entities")
     }
+    items(chapterEntities.value) { chapterEntity ->
+      ChapterRow(chapterEntity)
+    }
+  }
 }
 
 @Composable
 fun ChapterRow(item: ChapterEntity) {
-    Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
+  Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
 }
 
 @Composable
 fun ControlCreateChapterEntityDialog(
-    visibilityState: MutableState<VisibilityState>, onCreate: (ChapterEntity) -> Unit
+    visibilityState: MutableState<VisibilityState>, onCreate: (ChapterEntity) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            CreateChapterDialog(onCreate = {
-                onCreate(it)
-                visibilityState.value = VisibilityState.HIDDEN
-            }, onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-        VisibilityState.HIDDEN -> {
-            /* Do Nothing */
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      CreateChapterDialog(onCreate = {
+        onCreate(it)
+        visibilityState.value = VisibilityState.HIDDEN
+      }, onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {
+      /* Do Nothing */
+    }
+  }
 }
 
 @Composable
 fun CreateChapterDialog(onCreate: (ChapterEntity) -> Unit, onDismiss: () -> Unit) {
-    var label = ""
-    CreateDialog(title = { Text("Create Chapter Entity") }, content = {
-        CustomTextField(value = label, label = "Label", onValueChange = { label = it })
-    }, onConfirm = { onCreate(ChapterEntity(label = label)) }, onDismiss = onDismiss)
+  var label = ""
+  CreateDialog(title = { Text("Create Chapter Entity") }, content = {
+    CustomTextField(value = label, label = "Label", onValueChange = { label = it })
+  }, onConfirm = { onCreate(ChapterEntity(label = label)) }, onDismiss = onDismiss)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewChapterScreen() {
-    val chapterEntities = remember {
-        mutableStateOf(
-            listOf(
-                ChapterEntity(label = "Indore"),
-                ChapterEntity(label = "Honeywell"),
-                ChapterEntity(label = "Bangalore"),
-            )
-        )
-    }
-    ChapterScreen(chapterEntities = chapterEntities, onCreate = {}, onDismiss = {})
+  val chapterEntities = remember {
+    mutableStateOf(
+      listOf(
+        ChapterEntity(label = "Indore"),
+        ChapterEntity(label = "Honeywell"),
+        ChapterEntity(label = "Bangalore"),
+      )
+    )
+  }
+  ChapterScreen(chapterEntities = chapterEntities, onCreate = {}, onDismiss = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCreateChapterDialog() {
-    CreateChapterDialog(onCreate = {}, onDismiss = {})
+  CreateChapterDialog(onCreate = {}, onDismiss = {})
 }

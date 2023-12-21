@@ -20,103 +20,109 @@ import com.nishitnagar.splitnish.util.Helper
 fun ControlAccountScreen(
     visibilityState: MutableState<VisibilityState>,
     accountEntities: State<List<AccountEntity>>,
-    onCreate: (AccountEntity) -> Unit
+    onCreate: (AccountEntity) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            AccountScreen(accountEntities = accountEntities,
-                onCreate = onCreate,
-                onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-        VisibilityState.HIDDEN -> {
-            /* Do Nothing */
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      AccountScreen(accountEntities = accountEntities,
+                    onCreate = onCreate,
+                    onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {
+      /* Do Nothing */
+    }
+  }
 }
 
 @Composable
 fun AccountScreen(
-    accountEntities: State<List<AccountEntity>>, onCreate: (AccountEntity) -> Unit, onDismiss: () -> Unit
+    accountEntities: State<List<AccountEntity>>,
+    onCreate: (AccountEntity) -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    val dialogVisibilityState = remember { mutableStateOf(VisibilityState.HIDDEN) }
-    Column {
-        Row {
-            Button(onClick = { dialogVisibilityState.value = VisibilityState.VISIBLE }) {
-                Text("Create Account")
-            }
-            Button(onClick = onDismiss) {
-                Text("Dismiss")
-            }
-        }
-        AccountLazyColumn(accountEntities = accountEntities)
+  val dialogVisibilityState = remember { mutableStateOf(VisibilityState.HIDDEN) }
+  Column {
+    Row {
+      Button(onClick = { dialogVisibilityState.value = VisibilityState.VISIBLE }) {
+        Text("Create Account")
+      }
+      Button(onClick = onDismiss) {
+        Text("Dismiss")
+      }
     }
+    AccountLazyColumn(accountEntities = accountEntities)
+  }
 
-    ControlCreateAccountEntityDialog(dialogVisibilityState, onCreate = onCreate)
+  ControlCreateAccountEntityDialog(dialogVisibilityState, onCreate = onCreate)
 }
 
 @Composable
-fun AccountLazyColumn(@PreviewParameter(AccountEntitiesProvider::class) accountEntities: State<List<AccountEntity>>) {
-    LazyColumn {
-        item {
-            HeadingText(text = "Account Entities")
-        }
-        items(accountEntities.value) { accountEntity ->
-            AccountRow(accountEntity)
-        }
+fun AccountLazyColumn(
+    @PreviewParameter(AccountEntitiesProvider::class) accountEntities: State<List<AccountEntity>>,
+) {
+  LazyColumn {
+    item {
+      HeadingText(text = "Account Entities")
     }
+    items(accountEntities.value) { accountEntity ->
+      AccountRow(accountEntity)
+    }
+  }
 }
 
 @Composable
 fun AccountRow(item: AccountEntity) {
-    Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
+  Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
 }
 
 @Composable
 fun ControlCreateAccountEntityDialog(
-    visibilityState: MutableState<VisibilityState>, onCreate: (AccountEntity) -> Unit
+    visibilityState: MutableState<VisibilityState>, onCreate: (AccountEntity) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            CreateAccountDialog(onCreate = {
-                onCreate(it)
-                visibilityState.value = VisibilityState.HIDDEN
-            }, onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-        VisibilityState.HIDDEN -> {
-            /* Do Nothing */
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      CreateAccountDialog(onCreate = {
+        onCreate(it)
+        visibilityState.value = VisibilityState.HIDDEN
+      }, onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {
+      /* Do Nothing */
+    }
+  }
 }
 
 @Composable
 fun CreateAccountDialog(onCreate: (AccountEntity) -> Unit, onDismiss: () -> Unit) {
-    var label = ""
-    CreateDialog(title = { Text("Create Account Entity") }, content = {
-        CustomTextField(value = label, label = "Label", onValueChange = { label = it })
-    }, onConfirm = {
-        onCreate(
-            AccountEntity(label = label)
-        )
-    }, onDismiss = onDismiss)
+  var label = ""
+  CreateDialog(title = { Text("Create Account Entity") }, content = {
+    CustomTextField(value = label, label = "Label", onValueChange = { label = it })
+  }, onConfirm = {
+    onCreate(
+      AccountEntity(label = label)
+    )
+  }, onDismiss = onDismiss)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewAccountScreen() {
-    val accountEntities = remember {
-        mutableStateOf(
-            listOf(
-                AccountEntity(label = "Indore"),
-                AccountEntity(label = "Honeywell"),
-                AccountEntity(label = "Bangalore"),
-            )
-        )
-    }
-    AccountScreen(accountEntities = accountEntities, onCreate = {}, onDismiss = {})
+  val accountEntities = remember {
+    mutableStateOf(
+      listOf(
+        AccountEntity(label = "Indore"),
+        AccountEntity(label = "Honeywell"),
+        AccountEntity(label = "Bangalore"),
+      )
+    )
+  }
+  AccountScreen(accountEntities = accountEntities, onCreate = {}, onDismiss = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCreateAccountDialog() {
-    CreateAccountDialog(onCreate = {}, onDismiss = {})
+  CreateAccountDialog(onCreate = {}, onDismiss = {})
 }

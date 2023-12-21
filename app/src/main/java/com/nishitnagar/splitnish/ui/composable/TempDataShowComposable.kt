@@ -28,56 +28,56 @@ fun ControlShowDataComposable(
     visibilityState: MutableState<VisibilityState>,
     entities: State<List<Any>>,
     resourceId: Int,
-    onClick: (UUID?) -> Unit
+    onClick: (UUID?) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            ShowDataComposable(entities = entities,
-                resourceId = resourceId,
-                onClick = onClick,
-                onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-
-        VisibilityState.HIDDEN -> {/* Do Nothing */
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      ShowDataComposable(entities = entities,
+                         resourceId = resourceId,
+                         onClick = onClick,
+                         onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {/* Do Nothing */
+    }
+  }
 }
 
 @Composable
 fun ShowDataComposable(
-    entities: State<List<Any>>, resourceId: Int, onClick: (UUID?) -> Unit, onDismiss: () -> Unit
+    entities: State<List<Any>>, resourceId: Int, onClick: (UUID?) -> Unit, onDismiss: () -> Unit,
 ) {
-    Column {
-        Row {
-            Button(onClick = { onClick(null) }) {
-                Text("Create")
-            }
-            Button(onClick = onDismiss) {
-                Text("Dismiss")
-            }
-        }
-        ShowDataLazyColumn(entities = entities, resourceId = resourceId, onClick)
+  Column {
+    Row {
+      Button(onClick = { onClick(null) }) {
+        Text("Create")
+      }
+      Button(onClick = onDismiss) {
+        Text("Dismiss")
+      }
     }
+    ShowDataLazyColumn(entities = entities, resourceId = resourceId, onClick)
+  }
 }
 
 @Composable
 fun ShowDataLazyColumn(entities: State<List<Any>>, resourceId: Int, onClick: (UUID?) -> Unit) {
-    LazyColumn {
-        item {
-            HeadingText(text = stringResource(resourceId))
-        }
-        items(entities.value) { item ->
-            Text(text = Helper.gson.toJson(item), modifier = Modifier
-                .padding(8.dp)
-                .clickable {
-                    when (item) {
-                        is AccountEntity -> onClick(item.id)
-                        is CategoryEntity -> onClick(item.id)
-                        is SubCategoryEntity -> onClick(item.id)
-                        is ChapterEntity -> onClick(item.id)
-                        is TransactionEntity -> onClick(item.id)
-                    }
-                })
-        }
+  LazyColumn {
+    item {
+      HeadingText(text = stringResource(resourceId))
     }
+    items(entities.value) { item ->
+      Text(text = Helper.gson.toJson(item), modifier = Modifier
+          .padding(8.dp)
+          .clickable {
+              when (item) {
+                  is AccountEntity -> onClick(item.id)
+                  is CategoryEntity -> onClick(item.id)
+                  is SubCategoryEntity -> onClick(item.id)
+                  is ChapterEntity -> onClick(item.id)
+                  is TransactionEntity -> onClick(item.id)
+              }
+          })
+    }
+  }
 }

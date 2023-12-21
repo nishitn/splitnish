@@ -25,66 +25,87 @@ import java.time.LocalDateTime
 fun ControlTransactionScreen(
     visibilityState: MutableState<VisibilityState>,
     transactionEntities: State<List<TransactionEntity>>,
-    onCreate: (TransactionEntity) -> Unit
+    onCreate: (TransactionEntity) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            TransactionScreen(transactionEntities = transactionEntities,
-                onCreate = onCreate,
-                onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-        VisibilityState.HIDDEN -> {
-            /* Do Nothing */
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      TransactionScreen(transactionEntities = transactionEntities,
+                        onCreate = onCreate,
+                        onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {
+      /* Do Nothing */
+    }
+  }
 }
 
 @Composable
 fun TransactionScreen(
-    transactionEntities: State<List<TransactionEntity>>, onCreate: (TransactionEntity) -> Unit, onDismiss: () -> Unit
+    transactionEntities: State<List<TransactionEntity>>,
+    onCreate: (TransactionEntity) -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    val context = LocalContext.current
-    Column {
-        Row {
-            Button(onClick = { context.startActivity(Intent(context, CreatorActivity::class.java)) }) {
-                Text("Create Transaction")
-            }
-            Button(onClick = onDismiss) {
-                Text("Dismiss")
-            }
-        }
-        TransactionLazyColumn(transactionEntities = transactionEntities)
+  val context = LocalContext.current
+  Column {
+    Row {
+      Button(onClick = { context.startActivity(Intent(context, CreatorActivity::class.java)) }) {
+        Text("Create Transaction")
+      }
+      Button(onClick = onDismiss) {
+        Text("Dismiss")
+      }
     }
+    TransactionLazyColumn(transactionEntities = transactionEntities)
+  }
 }
 
 @Composable
-fun TransactionLazyColumn(@PreviewParameter(TransactionEntitiesProvider::class) transactionEntities: State<List<TransactionEntity>>) {
-    LazyColumn {
-        item {
-            HeadingText(text = "Transaction Entities")
-        }
-        items(transactionEntities.value) { transactionEntity ->
-            TransactionRow(transactionEntity)
-        }
+fun TransactionLazyColumn(
+    @PreviewParameter(TransactionEntitiesProvider::class)
+    transactionEntities: State<List<TransactionEntity>>,
+) {
+  LazyColumn {
+    item {
+      HeadingText(text = "Transaction Entities")
     }
+    items(transactionEntities.value) { transactionEntity ->
+      TransactionRow(transactionEntity)
+    }
+  }
 }
 
 @Composable
 fun TransactionRow(item: TransactionEntity) {
-    Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
+  Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewTransactionScreen() {
-    val transactionEntities = remember {
-        mutableStateOf(
-            listOf(
-                TransactionEntity(dateTime = LocalDateTime.now(), currency = Currency.INR, amount = 500.0, note = ""),
-                TransactionEntity(dateTime = LocalDateTime.now(), currency = Currency.INR, amount = 1500.0, note = ""),
-                TransactionEntity(dateTime = LocalDateTime.now(), currency = Currency.INR, amount = 2500.0, note = ""),
-            )
-        )
-    }
-    TransactionScreen(transactionEntities = transactionEntities, onCreate = {}, onDismiss = {})
+  val transactionEntities = remember {
+    mutableStateOf(
+      listOf(
+        TransactionEntity(
+          dateTime = LocalDateTime.now(),
+          currency = Currency.INR,
+          amount = 500.0,
+          note = ""
+        ),
+        TransactionEntity(
+          dateTime = LocalDateTime.now(),
+          currency = Currency.INR,
+          amount = 1500.0,
+          note = ""
+        ),
+        TransactionEntity(
+          dateTime = LocalDateTime.now(),
+          currency = Currency.INR,
+          amount = 2500.0,
+          note = ""
+        ),
+      )
+    )
+  }
+  TransactionScreen(transactionEntities = transactionEntities, onCreate = {}, onDismiss = {})
 }

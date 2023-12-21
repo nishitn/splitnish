@@ -16,92 +16,92 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val accountRepository: AccountRepository,
-    private val categoryRepository: CategoryRepository,
-    private val chapterRepository: ChapterRepository,
-    private val transactionRepository: TransactionRepository,
+  private val accountRepository: AccountRepository,
+  private val categoryRepository: CategoryRepository,
+  private val chapterRepository: ChapterRepository,
+  private val transactionRepository: TransactionRepository,
 ) : ViewModel() {
-    private val ioScope = CoroutineScope(Dispatchers.IO)
+  private val ioScope = CoroutineScope(Dispatchers.IO)
 
-    val accountEntities = accountRepository.getAccountEntitiesFlow()
+  val accountEntities = accountRepository.getAccountEntitiesFlow()
 
-    val categoryEntities = categoryRepository.getCategoryEntitiesFlow()
+  val categoryEntities = categoryRepository.getCategoryEntitiesFlow()
 
-    val subCategoryEntities = categoryRepository.getSubCategoryEntitiesFlow()
+  val subCategoryEntities = categoryRepository.getSubCategoryEntitiesFlow()
 
-    val chapterEntities = chapterRepository.getChapterEntitiesFlow()
+  val chapterEntities = chapterRepository.getChapterEntitiesFlow()
 
-    val transactionEntities = transactionRepository.getTransactionEntitiesFlow()
+  val transactionEntities = transactionRepository.getTransactionEntitiesFlow()
 
-    val categories = categoryRepository.getCategoriesFlow()
+  val categories = categoryRepository.getCategoriesFlow()
 
-    val chapters = chapterRepository.getChaptersFlow()
+  val chapters = chapterRepository.getChaptersFlow()
 
-    val transactions = transactionRepository.getTransactionsFlow()
+  val transactions = transactionRepository.getTransactionsFlow()
 
 
-    fun insert(accountEntity: AccountEntity) {
-        ioScope.launch { accountRepository.insert(accountEntity) }
-    }
+  fun insert(accountEntity: AccountEntity) {
+    ioScope.launch { accountRepository.insert(accountEntity) }
+  }
 
-    fun insert(categoryEntity: CategoryEntity) {
-        ioScope.launch { categoryRepository.insert(categoryEntity) }
-    }
+  fun insert(categoryEntity: CategoryEntity) {
+    ioScope.launch { categoryRepository.insert(categoryEntity) }
+  }
 
-    fun insert(subCategoryEntity: SubCategoryEntity) {
-        ioScope.launch { categoryRepository.insert(subCategoryEntity) }
-    }
+  fun insert(subCategoryEntity: SubCategoryEntity) {
+    ioScope.launch { categoryRepository.insert(subCategoryEntity) }
+  }
 
-    fun insert(chapterEntity: ChapterEntity) {
-        ioScope.launch { chapterRepository.insert(chapterEntity) }
-    }
+  fun insert(chapterEntity: ChapterEntity) {
+    ioScope.launch { chapterRepository.insert(chapterEntity) }
+  }
 
-    fun insert(userSelectionEntity: UserSelectionEntity) {
-        ioScope.launch { transactionRepository.insert(userSelectionEntity) }
-    }
+  fun insert(userSelectionEntity: UserSelectionEntity) {
+    ioScope.launch { transactionRepository.insert(userSelectionEntity) }
+  }
 
-    fun insert(groupSelectionEntity: GroupSelectionEntity) {
-        ioScope.launch { transactionRepository.insert(groupSelectionEntity) }
-    }
+  fun insert(groupSelectionEntity: GroupSelectionEntity) {
+    ioScope.launch { transactionRepository.insert(groupSelectionEntity) }
+  }
 
-    fun insert(transactionEntity: TransactionEntity) {
-        ioScope.launch { transactionRepository.insert(transactionEntity) }
-    }
+  fun insert(transactionEntity: TransactionEntity) {
+    ioScope.launch { transactionRepository.insert(transactionEntity) }
+  }
 
-    fun update(accountEntity: AccountEntity) {
-        ioScope.launch { accountRepository.update(accountEntity) }
-    }
+  fun update(accountEntity: AccountEntity) {
+    ioScope.launch { accountRepository.update(accountEntity) }
+  }
 
-    fun update(categoryEntity: CategoryEntity) {
-        ioScope.launch { categoryRepository.update(categoryEntity) }
-    }
+  fun update(categoryEntity: CategoryEntity) {
+    ioScope.launch { categoryRepository.update(categoryEntity) }
+  }
 
-    fun update(subCategoryEntity: SubCategoryEntity) {
-        ioScope.launch { categoryRepository.update(subCategoryEntity) }
-    }
+  fun update(subCategoryEntity: SubCategoryEntity) {
+    ioScope.launch { categoryRepository.update(subCategoryEntity) }
+  }
 
-    fun update(chapterEntity: ChapterEntity) {
-        ioScope.launch { chapterRepository.update(chapterEntity) }
-    }
+  fun update(chapterEntity: ChapterEntity) {
+    ioScope.launch { chapterRepository.update(chapterEntity) }
+  }
 
-    fun delete(accountEntity: AccountEntity) {
-        ioScope.launch { accountRepository.delete(accountEntity) }
-    }
+  fun delete(accountEntity: AccountEntity) {
+    ioScope.launch { accountRepository.delete(accountEntity) }
+  }
 
-    fun delete(categoryEntity: CategoryEntity) {
-        ioScope.launch { categoryRepository.delete(categoryEntity) }
-    }
+  fun delete(categoryEntity: CategoryEntity) {
+    ioScope.launch { categoryRepository.delete(categoryEntity) }
+  }
 
-    fun delete(subCategoryEntity: SubCategoryEntity) {
-        ioScope.launch { categoryRepository.delete(subCategoryEntity) }
-    }
+  fun delete(subCategoryEntity: SubCategoryEntity) {
+    ioScope.launch { categoryRepository.delete(subCategoryEntity) }
+  }
 
-    fun delete(chapterEntity: ChapterEntity) {
-        ioScope.launch { chapterRepository.delete(chapterEntity) }
-    }
+  fun delete(chapterEntity: ChapterEntity) {
+    ioScope.launch { chapterRepository.delete(chapterEntity) }
+  }
 
-    fun getUserChapterEntities() : Flow<List<ChapterEntity>> {
-        return chapterRepository.getChapterEntitiesFlow()
-            .map { it.filter { chapterEntity -> chapterEntity.groupId == null } }
-    }
+  fun getUserChapterEntities(): Flow<List<ChapterEntity>> {
+    return chapterRepository.getChapterEntitiesFlow()
+      .map { it.filter { chapterEntity -> chapterEntity.groupId == null } }
+  }
 }

@@ -8,11 +8,11 @@ import com.nishitnagar.splitnish.data.entity.GroupUserCrossRef
 import com.nishitnagar.splitnish.data.entity.UserEntity
 
 data class UserWithGroups(
-    @Embedded val userEntity: UserEntity,
-    @Relation(
-        parentColumn = "user_id",
-        entityColumn = "group_id",
-        associateBy = Junction(GroupUserCrossRef::class)
-    )
-    val groupEntities: List<GroupEntity>
+  @Embedded val userEntity: UserEntity,
+  @Relation(
+    parentColumn = "user_id",
+    entityColumn = "group_id",
+    associateBy = Junction(GroupUserCrossRef::class)
+  )
+  val groupEntities: List<GroupEntity>,
 )

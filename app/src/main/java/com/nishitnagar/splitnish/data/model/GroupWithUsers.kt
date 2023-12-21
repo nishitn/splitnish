@@ -8,15 +8,15 @@ import com.nishitnagar.splitnish.data.entity.GroupUserCrossRef
 import com.nishitnagar.splitnish.data.entity.UserEntity
 
 data class GroupWithUsers(
-    @Embedded val groupEntity: GroupEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(
-            value = GroupUserCrossRef::class,
-            parentColumn = "group_id",
-            entityColumn = "user_id"
-        )
+  @Embedded val groupEntity: GroupEntity,
+  @Relation(
+    parentColumn = "id",
+    entityColumn = "id",
+    associateBy = Junction(
+      value = GroupUserCrossRef::class,
+      parentColumn = "group_id",
+      entityColumn = "user_id"
     )
-    val userEntities: List<UserEntity>
+  )
+  val userEntities: List<UserEntity>,
 )

@@ -8,25 +8,25 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupDao {
-    @Insert
-    suspend fun insert(groupEntity: GroupEntity)
+  @Insert
+  suspend fun insert(groupEntity: GroupEntity)
 
-    @Update
-    suspend fun update(groupEntity: GroupEntity)
+  @Update
+  suspend fun update(groupEntity: GroupEntity)
 
-    @Delete
-    suspend fun delete(groupEntity: GroupEntity)
+  @Delete
+  suspend fun delete(groupEntity: GroupEntity)
 
-    @Insert
-    suspend fun insert(groupUserCrossRef: GroupUserCrossRef)
+  @Insert
+  suspend fun insert(groupUserCrossRef: GroupUserCrossRef)
 
-    @Update
-    suspend fun update(groupUserCrossRef: GroupUserCrossRef)
+  @Update
+  suspend fun update(groupUserCrossRef: GroupUserCrossRef)
 
-    @Delete
-    suspend fun delete(groupUserCrossRef: GroupUserCrossRef)
+  @Delete
+  suspend fun delete(groupUserCrossRef: GroupUserCrossRef)
 
-    @Transaction
-    @Query("SELECT * FROM Groups")
-    fun getGroupWithUsersFlow(): Flow<List<GroupWithUsers>>
+  @Transaction
+  @Query("SELECT * FROM Groups")
+  fun getGroupWithUsersFlow(): Flow<List<GroupWithUsers>>
 }

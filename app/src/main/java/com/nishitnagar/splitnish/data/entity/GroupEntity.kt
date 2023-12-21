@@ -7,6 +7,6 @@ import java.util.UUID
 
 @Entity(tableName = "Groups")
 data class GroupEntity(
-    @PrimaryKey @ColumnInfo(name = "id") val id: UUID = UUID.randomUUID(),
-    @ColumnInfo(name = "label") val label: String,
+  @PrimaryKey @ColumnInfo(name = "id") val id: UUID = UUID.randomUUID(),
+  @ColumnInfo(name = "label") val label: String,
 )

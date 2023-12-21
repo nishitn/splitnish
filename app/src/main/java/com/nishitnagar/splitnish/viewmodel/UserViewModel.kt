@@ -16,49 +16,49 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val groupRepository: GroupRepository,
-): ViewModel() {
-    private val ioScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+  private val userRepository: UserRepository,
+  private val groupRepository: GroupRepository,
+) : ViewModel() {
+  private val ioScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
-    val userEntities: Flow<List<UserEntity>> = userRepository.getUserEntitiesFlow()
+  val userEntities: Flow<List<UserEntity>> = userRepository.getUserEntitiesFlow()
 
-    fun getActiveUserEntity(): UserEntity? {
-        val userEntity: UserEntity?
-        runBlocking {
-            userEntity = userRepository.getActiveUserEntity()
-        }
-        return userEntity
+  fun getActiveUserEntity(): UserEntity? {
+    val userEntity: UserEntity?
+    runBlocking {
+      userEntity = userRepository.getActiveUserEntity()
     }
+    return userEntity
+  }
 
-    fun insert(userEntity: UserEntity) {
-        ioScope.launch {
-            userRepository.insert(userEntity)
-        }
+  fun insert(userEntity: UserEntity) {
+    ioScope.launch {
+      userRepository.insert(userEntity)
     }
+  }
 
-    fun insert(groupEntity: GroupEntity, groupUserCrossRef: GroupUserCrossRef) {
-        ioScope.launch {
-            groupRepository.insert(groupEntity)
-            groupRepository.insert(groupUserCrossRef)
-        }
+  fun insert(groupEntity: GroupEntity, groupUserCrossRef: GroupUserCrossRef) {
+    ioScope.launch {
+      groupRepository.insert(groupEntity)
+      groupRepository.insert(groupUserCrossRef)
     }
+  }
 
-    fun update(userEntity: UserEntity) {
-        ioScope.launch {
-            userRepository.update(userEntity)
-        }
+  fun update(userEntity: UserEntity) {
+    ioScope.launch {
+      userRepository.update(userEntity)
     }
+  }
 
-    fun update(groupEntity: GroupEntity) {
-        ioScope.launch {
-            groupRepository.update(groupEntity)
-        }
+  fun update(groupEntity: GroupEntity) {
+    ioScope.launch {
+      groupRepository.update(groupEntity)
     }
+  }
 
-    fun update(groupUserCrossRef: GroupUserCrossRef) {
-        ioScope.launch {
-            groupRepository.update(groupUserCrossRef)
-        }
+  fun update(groupUserCrossRef: GroupUserCrossRef) {
+    ioScope.launch {
+      groupRepository.update(groupUserCrossRef)
     }
+  }
 }

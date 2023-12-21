@@ -20,7 +20,11 @@ import com.nishitnagar.splitnish.util.Helper
 
 @Composable
 fun HeadingText(text: String) {
-    Text(text = text, modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.headlineLarge)
+  Text(
+    text = text,
+    modifier = Modifier.padding(8.dp),
+    style = MaterialTheme.typography.headlineLarge
+  )
 }
 
 @Composable
@@ -30,17 +34,17 @@ fun ConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     confirmButtonText: String = "Confirm",
-    dismissButtonText: String = "Cancel"
+    dismissButtonText: String = "Cancel",
 ) {
-    AlertDialog(title = title, text = text, onDismissRequest = onDismiss, confirmButton = {
-        Button(onClick = onConfirm) {
-            Text(confirmButtonText)
-        }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) {
-            Text(dismissButtonText)
-        }
-    })
+  AlertDialog(title = title, text = text, onDismissRequest = onDismiss, confirmButton = {
+    Button(onClick = onConfirm) {
+      Text(confirmButtonText)
+    }
+  }, dismissButton = {
+    TextButton(onClick = onDismiss) {
+      Text(dismissButtonText)
+    }
+  })
 }
 
 @Composable
@@ -50,102 +54,103 @@ fun CreateDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     confirmButtonText: String = "Create",
-    dismissButtonText: String = "Cancel"
+    dismissButtonText: String = "Cancel",
 ) {
-    AlertDialog(title = title, text = content, onDismissRequest = onDismiss, confirmButton = {
-        Button(onClick = onConfirm) {
-            Text(confirmButtonText)
-        }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) {
-            Text(dismissButtonText)
-        }
-    })
+  AlertDialog(title = title, text = content, onDismissRequest = onDismiss, confirmButton = {
+    Button(onClick = onConfirm) {
+      Text(confirmButtonText)
+    }
+  }, dismissButton = {
+    TextButton(onClick = onDismiss) {
+      Text(dismissButtonText)
+    }
+  })
 }
 
 @Composable
 fun CustomTextField(
-    value: String, label: String, modifier: Modifier = Modifier, onValueChange: (String) -> Unit
+    value: String, label: String, modifier: Modifier = Modifier, onValueChange: (String) -> Unit,
 ) {
-    OutlinedTextField(value = value,
-        modifier = modifier,
-        label = { Text(text = label) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        onValueChange = onValueChange,
-        singleLine = true
-    )
+  OutlinedTextField(
+    value = value,
+    modifier = modifier,
+    label = { Text(text = label) },
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    onValueChange = onValueChange,
+    singleLine = true
+  )
 }
 
 @Composable
 fun CustomNumberTextField(
-    value: Double?, label: String, modifier: Modifier = Modifier, onValueChange: (String) -> Unit
+    value: Double?, label: String, modifier: Modifier = Modifier, onValueChange: (String) -> Unit,
 ) {
-    val valueText = if (value != null) Helper.decimalFormat.format(value) else ""
-    val state = remember { mutableStateOf(TextFieldValue(valueText)) }
-    OutlinedTextField(value = state.value, modifier = modifier.onFocusChanged { focusState ->
-        if (focusState.isFocused) {
-            val text = state.value.text
-            state.value = state.value.copy(selection = TextRange(0, text.length))
-        }
-    }, label = {
-        if (label.isNotBlank()) {
-            Text(text = label)
-        }
-    }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), trailingIcon = {
-        if (state.value.text.toDoubleOrNull() == null) {
-            Icon(Icons.Filled.Warning, "error", tint = MaterialTheme.colorScheme.error)
-        }
-    }, onValueChange = {
-        state.value = it
-        onValueChange(state.value.text)
-    }, singleLine = true
-    )
+  val valueText = if (value != null) Helper.decimalFormat.format(value) else ""
+  val state = remember { mutableStateOf(TextFieldValue(valueText)) }
+  OutlinedTextField(value = state.value, modifier = modifier.onFocusChanged { focusState ->
+    if (focusState.isFocused) {
+      val text = state.value.text
+      state.value = state.value.copy(selection = TextRange(0, text.length))
+    }
+  }, label = {
+    if (label.isNotBlank()) {
+      Text(text = label)
+    }
+  }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), trailingIcon = {
+    if (state.value.text.toDoubleOrNull() == null) {
+      Icon(Icons.Filled.Warning, "error", tint = MaterialTheme.colorScheme.error)
+    }
+  }, onValueChange = {
+    state.value = it
+    onValueChange(state.value.text)
+  }, singleLine = true
+  )
 }
 
 @Composable
 fun CustomPopupOpenButton(
-    label: String, modifier: Modifier = Modifier, onClick: () -> Unit, enabled: Boolean  = true
+    label: String, modifier: Modifier = Modifier, onClick: () -> Unit, enabled: Boolean = true,
 ) {
-    Button(onClick = onClick, modifier = modifier, enabled = enabled) {
-        Text(text = label)
-    }
+  Button(onClick = onClick, modifier = modifier, enabled = enabled) {
+    Text(text = label)
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCustomPopupOpenButton() {
-    CustomPopupOpenButton(label = "Label", onClick = {})
+  CustomPopupOpenButton(label = "Label", onClick = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewHeadingText() {
-    HeadingText(text = "Heading")
+  HeadingText(text = "Heading")
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCreateDialog() {
-    CreateDialog(
-        title = {
-            Text("Create Chapter Entity")
-        },
-        content = {
-            CustomTextField(value = "Value", label = "Chapter Name", onValueChange = {})
-        },
-        onConfirm = {},
-        onDismiss = {},
-    )
+  CreateDialog(
+    title = {
+      Text("Create Chapter Entity")
+    },
+    content = {
+      CustomTextField(value = "Value", label = "Chapter Name", onValueChange = {})
+    },
+    onConfirm = {},
+    onDismiss = {},
+  )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCustomTextField() {
-    CustomTextField(value = "Value", label = "Label", onValueChange = {})
+  CustomTextField(value = "Value", label = "Label", onValueChange = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCustomNumberTextField() {
-    CustomNumberTextField(value = 50.0, label = "Label", onValueChange = {})
+  CustomNumberTextField(value = 50.0, label = "Label", onValueChange = {})
 }

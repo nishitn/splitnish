@@ -21,110 +21,114 @@ import com.nishitnagar.splitnish.util.Helper
 fun ControlUserScreen(
     visibilityState: MutableState<VisibilityState>,
     userEntities: State<List<UserEntity>>,
-    onCreate: (UserEntity) -> Unit
+    onCreate: (UserEntity) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            UserScreen(userEntities = userEntities,
-                onCreate = onCreate,
-                onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-        VisibilityState.HIDDEN -> {
-            /* Do Nothing */
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      UserScreen(userEntities = userEntities,
+                 onCreate = onCreate,
+                 onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {
+      /* Do Nothing */
+    }
+  }
 }
 
 @Composable
 fun UserScreen(
-    userEntities: State<List<UserEntity>>, onCreate: (UserEntity) -> Unit, onDismiss: () -> Unit
+    userEntities: State<List<UserEntity>>, onCreate: (UserEntity) -> Unit, onDismiss: () -> Unit,
 ) {
-    val dialogVisibilityState = remember { mutableStateOf(VisibilityState.HIDDEN) }
-    Column {
-        Row {
-            Button(onClick = { dialogVisibilityState.value = VisibilityState.VISIBLE }) {
-                Text("Create User")
-            }
-            Button(onClick = onDismiss) {
-                Text("Dismiss")
-            }
-        }
-        UserLazyColumn(userEntities = userEntities)
+  val dialogVisibilityState = remember { mutableStateOf(VisibilityState.HIDDEN) }
+  Column {
+    Row {
+      Button(onClick = { dialogVisibilityState.value = VisibilityState.VISIBLE }) {
+        Text("Create User")
+      }
+      Button(onClick = onDismiss) {
+        Text("Dismiss")
+      }
     }
+    UserLazyColumn(userEntities = userEntities)
+  }
 
-    ControlCreateUserEntityDialog(dialogVisibilityState, onCreate = onCreate)
+  ControlCreateUserEntityDialog(dialogVisibilityState, onCreate = onCreate)
 }
 
 @Composable
-fun UserLazyColumn(@PreviewParameter(UserEntitiesProvider::class) userEntities: State<List<UserEntity>>) {
-    LazyColumn {
-        item {
-            HeadingText(text = "User Entities")
-        }
-        items(userEntities.value) { userEntity ->
-            UserRow(userEntity)
-        }
+fun UserLazyColumn(
+    @PreviewParameter(UserEntitiesProvider::class) userEntities: State<List<UserEntity>>,
+) {
+  LazyColumn {
+    item {
+      HeadingText(text = "User Entities")
     }
+    items(userEntities.value) { userEntity ->
+      UserRow(userEntity)
+    }
+  }
 }
 
 @Composable
 fun UserRow(item: UserEntity) {
-    Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
+  Text(text = Helper.gson.toJson(item), modifier = Modifier.padding(8.dp))
 }
 
 @Composable
 fun ControlCreateUserEntityDialog(
-    visibilityState: MutableState<VisibilityState>, onCreate: (UserEntity) -> Unit
+    visibilityState: MutableState<VisibilityState>, onCreate: (UserEntity) -> Unit,
 ) {
-    when (visibilityState.value) {
-        VisibilityState.VISIBLE -> {
-            CreateUserDialog(onCreate = {
-                onCreate(it)
-                visibilityState.value = VisibilityState.HIDDEN
-            }, onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-        }
-        VisibilityState.HIDDEN -> {
-            if (Helper.activeUserEntity == null) visibilityState.value = VisibilityState.VISIBLE
-        }
+  when (visibilityState.value) {
+    VisibilityState.VISIBLE -> {
+      CreateUserDialog(onCreate = {
+        onCreate(it)
+        visibilityState.value = VisibilityState.HIDDEN
+      }, onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
     }
+
+    VisibilityState.HIDDEN -> {
+      if (Helper.activeUserEntity == null) visibilityState.value = VisibilityState.VISIBLE
+    }
+  }
 }
 
 @Composable
 fun CreateUserDialog(onCreate: (UserEntity) -> Unit, onDismiss: () -> Unit) {
-    var firstName = ""
-    var lastName = ""
-    var username = ""
+  var firstName = ""
+  var lastName = ""
+  var username = ""
 
-    CreateDialog(title = { Text("Create User Entity") }, content = {
-        Column {
-            CustomTextField(value = firstName, label = "First Name", onValueChange = { firstName = it })
-            CustomTextField(value = lastName, label = "Last Name", onValueChange = { lastName = it })
-            CustomTextField(value = username, label = "Username", onValueChange = { username = it })
-        }
-    }, onConfirm = {
-        onCreate(
-            UserEntity(firstName = firstName, lastName = lastName, username = username)
-        )
-    }, onDismiss = onDismiss)
+  CreateDialog(title = { Text("Create User Entity") }, content = {
+    Column {
+      CustomTextField(value = firstName, label = "First Name", onValueChange = { firstName = it })
+      CustomTextField(value = lastName, label = "Last Name", onValueChange = { lastName = it })
+      CustomTextField(value = username, label = "Username", onValueChange = { username = it })
+    }
+  }, onConfirm = {
+    onCreate(
+      UserEntity(firstName = firstName, lastName = lastName, username = username)
+    )
+  }, onDismiss = onDismiss)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewUserScreen() {
-    val userEntities = remember {
-        mutableStateOf(
-            listOf(
-                UserEntity(firstName = "Nishit", lastName = "Nagar", username = "nishit", isActive = true),
-                UserEntity(firstName = "Shashank", lastName = "Nagar", username = "shashank"),
-                UserEntity(firstName = "Darshit", lastName = "Nagar", username = "darshit"),
-            )
-        )
-    }
-    UserScreen(userEntities = userEntities, onCreate = {}, onDismiss = {})
+  val userEntities = remember {
+    mutableStateOf(
+      listOf(
+        UserEntity(firstName = "Nishit", lastName = "Nagar", username = "nishit", isActive = true),
+        UserEntity(firstName = "Shashank", lastName = "Nagar", username = "shashank"),
+        UserEntity(firstName = "Darshit", lastName = "Nagar", username = "darshit"),
+      )
+    )
+  }
+  UserScreen(userEntities = userEntities, onCreate = {}, onDismiss = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCreateUserDialog() {
-    CreateUserDialog(onCreate = {}, onDismiss = {})
+  CreateUserDialog(onCreate = {}, onDismiss = {})
 }

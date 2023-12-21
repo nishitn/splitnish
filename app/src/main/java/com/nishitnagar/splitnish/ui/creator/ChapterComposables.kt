@@ -31,191 +31,198 @@ import com.nishitnagar.splitnish.ui.composable.ConfirmationDialog
 import com.nishitnagar.splitnish.ui.composable.CustomTextField
 
 class ChapterComposables {
-    companion object {
-        @Composable
-        fun Update(
-            providedEntity: ChapterEntity?,
-            categoryEntities: State<List<CategoryEntity>>,
-            onCreate: (Any) -> Unit,
-            onUpdate: (Any) -> Unit,
-            onDelete: (Any) -> Unit,
-            onDismiss: () -> Unit,
-        ) {
-            val chapterEntityState = remember { mutableStateOf(ChapterEntity(label = "")) }
-            if (providedEntity != null) chapterEntityState.value = providedEntity
+  companion object {
+    @Composable
+    fun Update(
+      providedEntity: ChapterEntity?,
+      categoryEntities: State<List<CategoryEntity>>,
+      onCreate: (Any) -> Unit,
+      onUpdate: (Any) -> Unit,
+      onDelete: (Any) -> Unit,
+      onDismiss: () -> Unit,
+    ) {
+      val chapterEntityState = remember { mutableStateOf(ChapterEntity(label = "")) }
+      if (providedEntity != null) chapterEntityState.value = providedEntity
 
-            val selectedCategoryEntities = remember {
-                derivedStateOf {
-                    categoryEntities.value.filter { it.chapterId == chapterEntityState.value.id }
-                }
-            }
-
-            val context = LocalContext.current
-            val onCreateNewCategory = {
-                val entityData = HashMap<String, String>()
-                entityData[BundleKeys.CHAPTER_ID.name] = chapterEntityState.value.id.toString()
-
-                val intent = Intent(context, CreatorActivity::class.java)
-                intent.putExtra(BundleKeys.INT_RESOURCE.name, R.string.category_entity)
-                intent.putExtra(BundleKeys.ENTITY_INPUT_DATA.name, entityData)
-                context.startActivity(intent)
-            }
-
-            Column {
-                Text(text = "${stringResource(R.string.update)} ${stringResource(R.string.chapter_entity)}")
-                LazyColumn {
-                    item { LabelRow(chapterEntityState) }
-                    if (providedEntity != null) {
-                        item { SelectCategoryEntitiesRow(selectedCategoryEntities, onCreateNewCategory, onDelete) }
-                    }
-                }
-                ButtonsRow(
-                    isEntityProvided = providedEntity != null,
-                    chapterEntityState = chapterEntityState,
-                    onCreate = onCreate,
-                    onUpdate = onUpdate,
-                    onDismiss = onDismiss,
-                    onDelete = onDelete,
-                )
-            }
+      val selectedCategoryEntities = remember {
+        derivedStateOf {
+          categoryEntities.value.filter { it.chapterId == chapterEntityState.value.id }
         }
+      }
 
-        // region Label Row
+      val context = LocalContext.current
+      val onCreateNewCategory = {
+        val entityData = HashMap<String, String>()
+        entityData[BundleKeys.CHAPTER_ID.name] = chapterEntityState.value.id.toString()
 
-        @Composable
-        private fun LabelRow(
-            entityState: MutableState<ChapterEntity>,
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Label")
-                CustomTextField(value = entityState.value.label, label = "", onValueChange = {
-                    entityState.value = entityState.value.copy(label = it)
-                })
+        val intent = Intent(context, CreatorActivity::class.java)
+        intent.putExtra(BundleKeys.INT_RESOURCE.name, R.string.category_entity)
+        intent.putExtra(BundleKeys.ENTITY_INPUT_DATA.name, entityData)
+        context.startActivity(intent)
+      }
+
+      Column {
+        Text(text = "${stringResource(R.string.update)} ${stringResource(R.string.chapter_entity)}")
+        LazyColumn {
+          item { LabelRow(chapterEntityState) }
+          if (providedEntity != null) {
+            item {
+              SelectCategoryEntitiesRow(
+                selectedCategoryEntities,
+                onCreateNewCategory,
+                onDelete
+              )
             }
+          }
         }
-
-        // endregion
-
-        // region Category Row
-
-        @Composable
-        private fun SelectCategoryEntitiesRow(
-            selectedCategoryEntities: State<List<CategoryEntity>>,
-            onAdd: () -> Unit,
-            onDelete: (Any) -> Unit,
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Categories")
-                CategoryEntitiesColumn(selectedCategoryEntities, onAdd, onDelete)
-            }
-        }
-
-        @Composable
-        private fun CategoryEntitiesColumn(
-            selectedCategoryEntities: State<List<CategoryEntity>>,
-            onAdd: () -> Unit,
-            onDelete: (Any) -> Unit,
-        ) {
-            Column {
-                selectedCategoryEntities.value.forEach {
-                    CategoryEntityRow(categoryEntity = it, onDelete)
-                }
-                AddMoreCategoryRow(onAdd)
-            }
-        }
-
-        @Composable
-        private fun CategoryEntityRow(
-            categoryEntity: CategoryEntity,
-            onDelete: (Any) -> Unit,
-        ) {
-            val removeCategoryDialogState = remember { mutableStateOf(VisibilityState.HIDDEN) }
-
-            Column {
-                Row {
-                    Text(text = categoryEntity.label)
-                    IconButton(onClick = { removeCategoryDialogState.value = VisibilityState.VISIBLE }) {
-                        Icon(Icons.Default.Edit, "Edit Category")
-                    }
-                }
-                HorizontalDivider(thickness = 1.dp)
-            }
-
-            ControlConfirmDeleteDialog(removeCategoryDialogState, categoryEntity, onDelete)
-        }
-
-        @Composable
-        private fun AddMoreCategoryRow(
-            onAdd: () -> Unit,
-        ) {
-            Row {
-                Button(onClick = onAdd) {
-                    Text(text = "Add More")
-                }
-            }
-        }
-
-        @Composable
-        private fun ControlConfirmDeleteDialog(
-            visibilityState: MutableState<VisibilityState>,
-            categoryEntity: CategoryEntity,
-            onDelete: (Any) -> Unit,
-        ) {
-            when (visibilityState.value) {
-                VisibilityState.VISIBLE -> {
-                    ConfirmationDialog(title = { Text("Confirm Remove Category") },
-                        text = { Text(text = "Are you sure you want to remove Category: ${categoryEntity.label}?") },
-                        onConfirm = {
-                            onDelete(categoryEntity)
-                            visibilityState.value = VisibilityState.HIDDEN
-                        },
-                        onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
-                }
-
-                VisibilityState.HIDDEN -> {/* Do Nothing */
-                }
-            }
-        }
-
-        // endregion
-
-        // region Buttons Row
-
-        @Composable
-        private fun ButtonsRow(
-            isEntityProvided: Boolean,
-            chapterEntityState: MutableState<ChapterEntity>,
-            onCreate: (Any) -> Unit,
-            onUpdate: (Any) -> Unit,
-            onDelete: (Any) -> Unit,
-            onDismiss: () -> Unit,
-        ) {
-            Row {
-                Button(enabled = chapterEntityState.value.label.isNotBlank(), onClick = {
-                    if (isEntityProvided) onUpdate(chapterEntityState.value) else onCreate(chapterEntityState.value)
-                    onDismiss()
-                }) {
-                    val buttonLabel = stringResource(if (isEntityProvided) R.string.update else R.string.create)
-                    Text(text = buttonLabel)
-                }
-                Button(onClick = { onDismiss() }) {
-                    Text(text = stringResource(R.string.cancel))
-                }
-                if (isEntityProvided) {
-                    Button(onClick = {
-                        onDelete(chapterEntityState.value)
-                        onDismiss()
-                    }) {
-                        Text(text = stringResource(R.string.delete))
-                    }
-                }
-            }
-        }
-
-        //endregion
+        ButtonsRow(
+          isEntityProvided = providedEntity != null,
+          chapterEntityState = chapterEntityState,
+          onCreate = onCreate,
+          onUpdate = onUpdate,
+          onDismiss = onDismiss,
+          onDelete = onDelete,
+        )
+      }
     }
+
+    // region Label Row
+
+    @Composable
+    private fun LabelRow(
+      entityState: MutableState<ChapterEntity>,
+    ) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Text(text = "Label")
+        CustomTextField(value = entityState.value.label, label = "", onValueChange = {
+          entityState.value = entityState.value.copy(label = it)
+        })
+      }
+    }
+
+    // endregion
+
+    // region Category Row
+
+    @Composable
+    private fun SelectCategoryEntitiesRow(
+      selectedCategoryEntities: State<List<CategoryEntity>>,
+      onAdd: () -> Unit,
+      onDelete: (Any) -> Unit,
+    ) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Text(text = "Categories")
+        CategoryEntitiesColumn(selectedCategoryEntities, onAdd, onDelete)
+      }
+    }
+
+    @Composable
+    private fun CategoryEntitiesColumn(
+      selectedCategoryEntities: State<List<CategoryEntity>>,
+      onAdd: () -> Unit,
+      onDelete: (Any) -> Unit,
+    ) {
+      Column {
+        selectedCategoryEntities.value.forEach {
+          CategoryEntityRow(categoryEntity = it, onDelete)
+        }
+        AddMoreCategoryRow(onAdd)
+      }
+    }
+
+    @Composable
+    private fun CategoryEntityRow(
+      categoryEntity: CategoryEntity,
+      onDelete: (Any) -> Unit,
+    ) {
+      val removeCategoryDialogState = remember { mutableStateOf(VisibilityState.HIDDEN) }
+
+      Column {
+        Row {
+          Text(text = categoryEntity.label)
+          IconButton(onClick = { removeCategoryDialogState.value = VisibilityState.VISIBLE }) {
+            Icon(Icons.Default.Edit, "Edit Category")
+          }
+        }
+        HorizontalDivider(thickness = 1.dp)
+      }
+
+      ControlConfirmDeleteDialog(removeCategoryDialogState, categoryEntity, onDelete)
+    }
+
+    @Composable
+    private fun AddMoreCategoryRow(
+      onAdd: () -> Unit,
+    ) {
+      Row {
+        Button(onClick = onAdd) {
+          Text(text = "Add More")
+        }
+      }
+    }
+
+    @Composable
+    private fun ControlConfirmDeleteDialog(
+      visibilityState: MutableState<VisibilityState>,
+      categoryEntity: CategoryEntity,
+      onDelete: (Any) -> Unit,
+    ) {
+      when (visibilityState.value) {
+        VisibilityState.VISIBLE -> {
+          ConfirmationDialog(title = { Text("Confirm Remove Category") },
+                             text = { Text(text = "Are you sure you want to remove Category: ${categoryEntity.label}?") },
+                             onConfirm = {
+                               onDelete(categoryEntity)
+                               visibilityState.value = VisibilityState.HIDDEN
+                             },
+                             onDismiss = { visibilityState.value = VisibilityState.HIDDEN })
+        }
+
+        VisibilityState.HIDDEN -> {/* Do Nothing */
+        }
+      }
+    }
+
+    // endregion
+
+    // region Buttons Row
+
+    @Composable
+    private fun ButtonsRow(
+      isEntityProvided: Boolean,
+      chapterEntityState: MutableState<ChapterEntity>,
+      onCreate: (Any) -> Unit,
+      onUpdate: (Any) -> Unit,
+      onDelete: (Any) -> Unit,
+      onDismiss: () -> Unit,
+    ) {
+      Row {
+        Button(enabled = chapterEntityState.value.label.isNotBlank(), onClick = {
+          if (isEntityProvided) onUpdate(chapterEntityState.value) else onCreate(chapterEntityState.value)
+          onDismiss()
+        }) {
+          val buttonLabel =
+            stringResource(if (isEntityProvided) R.string.update else R.string.create)
+          Text(text = buttonLabel)
+        }
+        Button(onClick = { onDismiss() }) {
+          Text(text = stringResource(R.string.cancel))
+        }
+        if (isEntityProvided) {
+          Button(onClick = {
+            onDelete(chapterEntityState.value)
+            onDismiss()
+          }) {
+            Text(text = stringResource(R.string.delete))
+          }
+        }
+      }
+    }
+
+    //endregion
+  }
 }
